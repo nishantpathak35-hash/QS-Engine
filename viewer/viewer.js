@@ -515,7 +515,7 @@ function updateAIIntelligenceUI() {
 
   const ai = drawingData && drawingData.ai_insight;
   if (!ai) {
-    card.innerHTML = `<span style="color: var(--text-secondary);">Standard Geometric Extraction Active</span>`;
+    card.innerHTML = `<span style="color: var(--txt-muted);">Load a drawing to activate AI space recognition.</span>`;
     if (badge) badge.innerText = "Standby";
     return;
   }
@@ -530,14 +530,15 @@ function updateAIIntelligenceUI() {
 
   card.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-      <span style="font-weight: 700; color: var(--accent-cyan); font-size: 0.8rem;">${ai.title || ai.discipline}</span>
-      <span style="color: var(--accent-green); font-weight: 700;">${(ai.confidence * 100).toFixed(1)}% Conf.</span>
+      <span style="font-weight: 700; color: var(--txt-primary); font-size: 0.78rem;">${ai.title || ai.discipline}</span>
+      <span style="color: var(--accent-green); font-weight: 600; font-size: 0.72rem;">${(ai.confidence * 100).toFixed(1)}%</span>
     </div>
-    <div style="font-size: 0.72rem; color: #94a3b8; margin-bottom: 6px;">
-      Provider: <strong style="color: #ffd700;">${ai.ai_provider_used || "Local AI"}</strong> | Scale: <strong>1:${ai.scale_ratio || 100}</strong>
+    <div style="font-size: 0.7rem; color: var(--txt-muted); margin-bottom: 6px;">
+      Scale: <strong style="color: var(--txt-secondary);">1:${ai.scale_ratio || 100}</strong>
+      &nbsp;·&nbsp; ${ai.ai_provider_used || 'Local AI'}
     </div>
-    ${suppressedHtml ? `<div style="background: rgba(239, 68, 68, 0.08); border-left: 3px solid #ef4444; padding: 4px 6px; margin-bottom: 6px; font-size: 0.7rem;">${suppressedHtml}</div>` : ''}
-    <div style="font-size: 0.71rem; color: #cbd5e1; line-height: 1.4;">
+    ${suppressedHtml ? `<div style="background: rgba(224,82,82,0.08); border-left: 2px solid #E05252; padding: 4px 6px; margin-bottom: 6px; font-size: 0.68rem;">${suppressedHtml}</div>` : ''}
+    <div style="font-size: 0.7rem; color: var(--txt-secondary); line-height: 1.4;">
       ${reasonsHtml}
     </div>
   `;
@@ -548,18 +549,15 @@ function setupUI() {
   const list = document.getElementById('takeoffList');
 
   if (!drawingData) {
-    if (grid) grid.innerHTML = '<span style="font-size: 0.8rem; color: var(--text-secondary);">No drawing loaded</span>';
+    if (grid) grid.innerHTML = '<span style="font-size: 0.75rem; color: var(--txt-muted);">No drawing loaded</span>';
     if (list) {
       list.innerHTML = `
-        <div style="text-align: center; padding: 50px 20px; color: var(--text-secondary);">
-          <div style="font-size: 2.6rem; margin-bottom: 14px;">📂</div>
-          <h3 style="font-weight: 700; color: #fff; margin-bottom: 8px; font-size: 1.05rem;">Ready for Drawing Upload</h3>
-          <p style="font-size: 0.8rem; line-height: 1.6; color: var(--text-secondary); margin-bottom: 20px;">
-            Upload your PDF or DXF layout to automatically calibrate scale, extract spaces, and generate itemized BOQ quantities.
-          </p>
-          <label class="ctrl-btn upload-btn" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid #38bdf8; color: #fff; font-weight: 700; padding: 8px 18px; border-radius: 6px; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35); cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-            <span style="font-size: 0.95rem;">📂</span>
-            <span>Upload Drawing (PDF / DXF)</span>
+        <div class="empty-state">
+          <div class="empty-icon">📐</div>
+          <h3>Ready for Drawing Upload</h3>
+          <p>Upload a PDF or DXF layout to auto-calibrate scale, extract spaces, and generate itemised BOQ quantities.</p>
+          <label class="cta-btn" style="cursor:pointer">
+            Upload Drawing (PDF / DXF)
             <input type="file" onchange="const f = this.files[0]; if (f) { const dt = new DataTransfer(); dt.items.add(f); document.getElementById('fileInput').files = dt.files; document.getElementById('fileInput').dispatchEvent(new Event('change')); }" accept=".dxf,.pdf" style="display: none;">
           </label>
         </div>
@@ -1299,30 +1297,34 @@ function render() {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
-    const boxW = Math.min(520, canvas.width - 60);
-    const boxH = 220;
+    const boxW = Math.min(480, canvas.width - 60);
+    const boxH = 200;
     ctx.save();
-    ctx.strokeStyle = "rgba(0, 210, 255, 0.35)";
+    // COG brand dashed border
+    ctx.strokeStyle = "rgba(232, 96, 28, 0.28)";
     ctx.lineWidth = 1.5;
     ctx.setLineDash([8, 6]);
     ctx.strokeRect(cx - boxW / 2, cy - boxH / 2, boxW, boxH);
     ctx.setLineDash([]);
 
-    ctx.font = "40px sans-serif";
+    // Upload icon box
+    ctx.fillStyle = "rgba(232, 96, 28, 0.10)";
+    ctx.beginPath();
+    ctx.roundRect(cx - 22, cy - boxH/2 + 24, 44, 44, 8);
+    ctx.fill();
+    ctx.fillStyle = "#E8601C";
+    ctx.font = "22px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("📂", cx, cy - 35);
+    ctx.fillText("↑", cx, cy - boxH/2 + 52);
 
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 18px 'Inter', sans-serif";
-    ctx.fillText("Drag & Drop your Drawing Here", cx, cy + 12);
+    ctx.fillStyle = "#EDF0F4";
+    ctx.font = "600 16px 'Inter', sans-serif";
+    ctx.fillText("Drop drawing here or click Upload", cx, cy + 4);
 
-    ctx.fillStyle = "#94a3b8";
-    ctx.font = "13px 'Inter', sans-serif";
-    ctx.fillText("Supports Vector PDF & CAD DXF layouts", cx, cy + 38);
+    ctx.fillStyle = "#404858";
+    ctx.font = "12px 'Inter', sans-serif";
+    ctx.fillText("Vector PDF · CAD DXF · Auto-scale calibration", cx, cy + 26);
 
-    ctx.fillStyle = "#00e5ff";
-    ctx.font = "11px 'Inter', sans-serif";
-    ctx.fillText("Auto-Scale Calibration • Space Recognition • Zero Manual Inputs", cx, cy + 68);
     ctx.restore();
     return;
   }
