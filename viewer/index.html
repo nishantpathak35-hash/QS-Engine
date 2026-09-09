@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QS Engine — Construct-O-Genie</title>
   <meta name="description" content="AI-powered Quantification Engine for interior fit-out drawings. Auto-scale, BOQ, priced estimates.">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=cog3.1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
     </div>
 
     <div class="meta-badges">
-      <!-- Upload -->
+      <!-- Upload Drawing CTA -->
       <label class="ctrl-btn upload-btn" id="btnUploadLayout"
              title="Upload DXF or Vector PDF layout">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -46,14 +46,14 @@
         <span id="scaleLabelText">Auto-Calibrating Scale…</span>
       </div>
 
-      <!-- Samples -->
-      <div class="header-ctrl-group" style="opacity:0.7" title="Load benchmark test drawings">
-        <select id="sampleSelect" class="header-select" style="max-width:150px;font-size:0.72rem">
+      <!-- Sample Benchmarks -->
+      <div class="header-ctrl-group" title="Load benchmark test drawings">
+        <select id="sampleSelect" class="header-select" style="max-width:150px;font-size:0.74rem">
           <option value="" disabled selected>Sample Benchmarks</option>
         </select>
       </div>
 
-      <!-- Wastage -->
+      <!-- Wastage Setting -->
       <div class="header-ctrl-group">
         <span class="ctrl-label">Wastage</span>
         <select id="wastageSelect" class="header-select">
@@ -64,7 +64,7 @@
         </select>
       </div>
 
-      <!-- Grade -->
+      <!-- Fitout Grade -->
       <div class="header-ctrl-group">
         <span class="ctrl-label">Grade</span>
         <select id="gradeSelect" class="header-select">
@@ -75,7 +75,7 @@
       </div>
 
       <button class="ctrl-btn" id="btnRunTakeoff"
-              style="display:none;background:var(--cog-brand);color:#fff;border-color:transparent;cursor:pointer">
+              style="display:none;background:var(--brand);color:#fff;border-color:transparent;cursor:pointer">
         Recalculate
       </button>
 
@@ -91,7 +91,7 @@
     <section class="canvas-container" id="canvasViewport" aria-label="CAD Drawing Canvas">
       <canvas id="cadCanvas"></canvas>
 
-      <!-- Trade filter pill bar -->
+      <!-- Trade Filter Pill Bar -->
       <div class="trade-filter-bar" id="tradeFilterBar" role="toolbar" aria-label="Trade Filter">
         <button class="trade-btn active" data-trade="all"       title="All layers">All Trades</button>
         <button class="trade-btn" data-trade="flooring"         title="Flooring & Skirting">Flooring</button>
@@ -103,7 +103,7 @@
         <button class="trade-btn" data-trade="av"               title="AV & Displays">AV</button>
       </div>
 
-      <!-- Zoom controls -->
+      <!-- Viewport Zoom Controls -->
       <div class="viewport-controls">
         <button class="ctrl-btn" id="btnZoomIn"  title="Zoom In">+</button>
         <button class="ctrl-btn" id="btnZoomOut" title="Zoom Out">−</button>
@@ -125,7 +125,7 @@
         <div class="finish-filter-bar" id="finishFilterBar"></div>
       </div>
 
-      <!-- CAD Layers -->
+      <!-- CAD Layers Accordion -->
       <details class="panel-section panel-accordion" id="layersAccordion">
         <summary class="panel-title">
           <div style="display:flex;align-items:center;gap:8px">
@@ -140,34 +140,34 @@
         <div class="layers-grid" id="layersGrid"></div>
       </details>
 
-      <!-- AI Intelligence -->
+      <!-- AI Intelligence Accordion -->
       <details class="panel-section panel-accordion" id="aiIntelligenceSection" open>
         <summary class="panel-title">
           <div style="display:flex;align-items:center;gap:6px">
             <span>AI Drawing Intelligence</span>
           </div>
           <span class="badge badge-green" id="aiStatusBadge"
-                style="font-size:0.62rem;padding:2px 7px">Standby</span>
+                style="font-size:0.64rem;padding:2px 8px">Standby</span>
         </summary>
         <div id="aiInsightsCard">
-          <span style="color:var(--txt-muted)">
+          <span style="color:var(--t3)">
             Load a drawing to activate AI-powered space recognition and scale calibration.
           </span>
         </div>
       </details>
 
-      <!-- BOQ header -->
+      <!-- BOQ Header & Segmented Tabs -->
       <div class="panel-section" style="padding-bottom:8px;border-bottom:none">
         <div class="panel-title">
-          <span style="color:var(--txt-primary)">Quantities &amp; BOQ</span>
+          <span style="color:var(--t1);font-weight:700">Quantities &amp; BOQ</span>
           <div style="display:flex;gap:5px">
             <button class="ctrl-btn" id="btnExportExcel"
-                    style="font-size:0.7rem;padding:3px 9px;background:rgba(52,196,113,0.12);
-                           color:var(--accent-green);border-color:rgba(52,196,113,0.2);cursor:pointer">
+                    style="font-size:0.7rem;padding:3px 9px;background:var(--green-bg);
+                           color:var(--green);border-color:var(--green-border);cursor:pointer">
               Excel
             </button>
             <button class="ctrl-btn" id="btnExportCsv"
-                    style="font-size:0.7rem;padding:3px 9px;background:var(--bg-raised);cursor:pointer">
+                    style="font-size:0.7rem;padding:3px 9px;background:var(--surface-2);color:var(--t2);cursor:pointer">
               CSV
             </button>
           </div>
@@ -179,22 +179,24 @@
         </div>
       </div>
 
-      <!-- Dynamic takeoff list -->
+      <!-- Dynamic Takeoff List -->
       <div class="takeoff-container" id="takeoffList" role="region" aria-label="Takeoff Line Items">
         <!-- Empty state -->
         <div class="empty-state" id="emptyState">
-          <div class="empty-icon">📐</div>
+          <div class="empty-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8601C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
           <h3>Ready for Drawing Upload</h3>
           <p>Upload a PDF or DXF layout to auto-calibrate scale, extract spaces, and generate itemised BOQ quantities.</p>
           <label class="cta-btn" for="fileInput">Upload Drawing (PDF / DXF)</label>
         </div>
       </div>
 
-      <!-- Audit Trail -->
+      <!-- Audit Trail & Measurement Evidence -->
       <details class="evidence-panel" id="evidencePanel">
         <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none">
           <span class="evidence-title">Audit Trail &amp; Measurement Evidence</span>
-          <span style="font-size:0.65rem;color:var(--txt-muted)">▾</span>
+          <span style="font-size:0.65rem;color:var(--t4)">▾</span>
         </summary>
         <div class="evidence-content" id="evidenceContent" style="margin-top:6px">
           Select any room or takeoff row above to inspect its measurement derivation and source polygon.
@@ -203,6 +205,6 @@
     </aside>
   </main>
 
-  <script src="viewer.js"></script>
+  <script src="viewer.js?v=cog3.1"></script>
 </body>
 </html>

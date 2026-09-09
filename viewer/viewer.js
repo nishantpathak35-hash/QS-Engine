@@ -49,17 +49,16 @@ function formatQuantityAndUnit(rawQty, rawUnit) {
   };
 }
 
-// Distinct Architectural Styling by Trade & Layer Type
 const TRADE_COLOR_MAP = {
-  walls: { color: "#f8fafc", width: 2.6, dash: [] },
-  glazing: { color: "#00e5ff", width: 2.2, dash: [] },
-  doors: { color: "#ff6e40", width: 2.0, dash: [] },
-  ceilings: { color: "#c084fc", width: 1.5, dash: [5, 4] },
-  furniture: { color: "#fbbf24", width: 1.4, dash: [] },
-  fixtures: { color: "#facc15", width: 1.6, dash: [] },
-  plumbing: { color: "#2dd4bf", width: 1.8, dash: [] },
-  annotations: { color: "#94a3b8", width: 1.0, dash: [] },
-  default: { color: "#64748b", width: 1.2, dash: [] }
+  walls: { color: "#0f172a", width: 2.6, dash: [] },
+  glazing: { color: "#0284c7", width: 2.0, dash: [] },
+  doors: { color: "#ea580c", width: 1.8, dash: [] },
+  ceilings: { color: "#7c3aed", width: 1.4, dash: [5, 4] },
+  furniture: { color: "#d97706", width: 1.3, dash: [] },
+  fixtures: { color: "#b45309", width: 1.5, dash: [] },
+  plumbing: { color: "#0d9488", width: 1.6, dash: [] },
+  annotations: { color: "#64748b", width: 1.0, dash: [] },
+  default: { color: "#475569", width: 1.2, dash: [] }
 };
 
 function getLayerStyle(layerName) {
@@ -94,11 +93,11 @@ function getLayerStyle(layerName) {
 
 // Color Palette for Floor Finishes (IS 1200 / POMI Interior Takeoffs)
 const FINISH_PALETTE = {
-  "FL-01": { fill: "rgba(0, 210, 255, 0.16)", stroke: "#00d2ff", name: "Italian Marble / Vitrified Tile" },
-  "FL-02": { fill: "rgba(167, 139, 250, 0.16)", stroke: "#a78bfa", name: "Acoustic Carpet Tile" },
-  "FL-03": { fill: "rgba(52, 211, 153, 0.16)", stroke: "#34d399", name: "Antibacterial Seamless Vinyl" },
-  "FL-04": { fill: "rgba(251, 146, 60, 0.16)", stroke: "#fb923c", name: "Anti-Skid Vitrified Tile" },
-  "FL-05": { fill: "rgba(244, 114, 182, 0.16)", stroke: "#f472b6", name: "Anti-Static Raised Access Floor" }
+  "FL-01": { fill: "rgba(2, 132, 199, 0.12)", stroke: "#0284c7", name: "Italian Marble / Vitrified Tile" },
+  "FL-02": { fill: "rgba(124, 58, 237, 0.12)", stroke: "#7c3aed", name: "Acoustic Carpet Tile" },
+  "FL-03": { fill: "rgba(5, 150, 105, 0.12)", stroke: "#059669", name: "Antibacterial Seamless Vinyl" },
+  "FL-04": { fill: "rgba(234, 88, 12, 0.12)", stroke: "#ea580c", name: "Anti-Skid Vitrified Tile" },
+  "FL-05": { fill: "rgba(219, 39, 119, 0.12)", stroke: "#db2777", name: "Anti-Static Raised Access Floor" }
 };
 
 function getRoomFinishStyle(room) {
@@ -119,7 +118,7 @@ function getRoomFinishStyle(room) {
   if (name.includes("CLINIC") || name.includes("SURGERY") || name.includes("LAB") || name.includes("DENTAL")) {
     return FINISH_PALETTE["FL-03"];
   }
-  return { fill: "rgba(255, 255, 255, 0.06)", stroke: "rgba(0, 210, 255, 0.4)", name: "Standard Floor" };
+  return { fill: "rgba(15, 23, 42, 0.04)", stroke: "rgba(15, 23, 42, 0.2)", name: "Standard Floor" };
 }
 
 window.addEventListener('DOMContentLoaded', init);
@@ -438,7 +437,7 @@ function updateLayersGridUI() {
   const roomTag = document.createElement('div');
   const roomsActive = activeLayers.has("ROOM_OVERLAYS");
   roomTag.className = `layer-tag ${roomsActive ? 'active' : ''}`;
-  roomTag.innerHTML = `<div class="layer-dot" style="background: #00e676"></div> SPACES (${drawingData.rooms.length})`;
+  roomTag.innerHTML = `<div class="layer-dot" style="background: #059669"></div> SPACES (${drawingData.rooms.length})`;
   roomTag.onclick = () => {
     if (activeLayers.has("ROOM_OVERLAYS")) activeLayers.delete("ROOM_OVERLAYS");
     else activeLayers.add("ROOM_OVERLAYS");
@@ -452,7 +451,7 @@ function updateLayersGridUI() {
     const fixTag = document.createElement('div');
     const fixActive = activeLayers.has("LIGHTING_FIXTURES");
     fixTag.className = `layer-tag ${fixActive ? 'active' : ''}`;
-    fixTag.innerHTML = `<div class="layer-dot" style="background: #ffd700"></div> FIXTURES (${drawingData.fixtures.length})`;
+    fixTag.innerHTML = `<div class="layer-dot" style="background: #d97706"></div> FIXTURES (${drawingData.fixtures.length})`;
     fixTag.onclick = () => {
       if (activeLayers.has("LIGHTING_FIXTURES")) activeLayers.delete("LIGHTING_FIXTURES");
       else activeLayers.add("LIGHTING_FIXTURES");
@@ -553,7 +552,9 @@ function setupUI() {
     if (list) {
       list.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">📐</div>
+          <div class="empty-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E8601C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
           <h3>Ready for Drawing Upload</h3>
           <p>Upload a PDF or DXF layout to auto-calibrate scale, extract spaces, and generate itemised BOQ quantities.</p>
           <label class="cta-btn" style="cursor:pointer">
@@ -593,12 +594,12 @@ function setupUI() {
 
         tableRows += `
           <tr>
-            <td><strong style="color: var(--accent-cyan);">${code}</strong></td>
-            <td style="font-size: 0.78rem;">${data.description || code}</td>
-            <td style="text-align: right; color: #8b9bb4; font-weight: 600;">${Number(netObj.qty).toLocaleString('en-IN')}</td>
-            <td style="text-align: center; color: var(--accent-cyan); font-weight: 700; font-size: 0.75rem;">${wPct}</td>
-            <td style="text-align: right; font-weight: 800; color: var(--accent-green);">${Number(grossObj.qty).toLocaleString('en-IN')}</td>
-            <td style="text-align: center; color: #ffd700; font-weight: 700; font-size: 0.74rem;">${netObj.unit}</td>
+            <td><strong style="color: var(--brand); font-family: monospace; font-size: 0.75rem;">${code}</strong></td>
+            <td style="font-size: 0.76rem; color: var(--t1);">${data.description || code}</td>
+            <td style="text-align: right; color: var(--t3); font-weight: 500;">${Number(netObj.qty).toLocaleString('en-IN')}</td>
+            <td style="text-align: center; color: var(--brand); font-weight: 600; font-size: 0.74rem;">${wPct}</td>
+            <td style="text-align: right; font-weight: 700; color: var(--green);">${Number(grossObj.qty).toLocaleString('en-IN')}</td>
+            <td style="text-align: center; color: var(--t3); font-weight: 600; font-size: 0.72rem;">${netObj.unit}</td>
           </tr>
         `;
       }
@@ -607,12 +608,12 @@ function setupUI() {
       const grossObj = formatQuantityAndUnit(totalFloorArea * 1.05, 'sqm');
       tableRows += `
         <tr>
-          <td><strong style="color: var(--accent-cyan);">FL-RAW</strong></td>
-          <td>Measured Floor Area</td>
-          <td style="text-align: right; color: #8b9bb4; font-weight: 600;">${Number(netObj.qty).toLocaleString('en-IN')}</td>
-          <td style="text-align: center; color: var(--accent-cyan); font-weight: 700;">5%</td>
-          <td style="text-align: right; font-weight: 800; color: var(--accent-green);">${Number(grossObj.qty).toLocaleString('en-IN')}</td>
-          <td style="text-align: center; color: #ffd700; font-weight: 700; font-size: 0.74rem;">sqft</td>
+          <td><strong style="color: var(--brand); font-family: monospace; font-size: 0.75rem;">FL-RAW</strong></td>
+          <td style="font-size: 0.76rem; color: var(--t1);">Measured Floor Area</td>
+          <td style="text-align: right; color: var(--t3); font-weight: 500;">${Number(netObj.qty).toLocaleString('en-IN')}</td>
+          <td style="text-align: center; color: var(--brand); font-weight: 600;">5%</td>
+          <td style="text-align: right; font-weight: 700; color: var(--green);">${Number(grossObj.qty).toLocaleString('en-IN')}</td>
+          <td style="text-align: center; color: var(--t3); font-weight: 600; font-size: 0.72rem;">sqft</td>
         </tr>
       `;
     }
@@ -644,9 +645,9 @@ function setupUI() {
           ${tableRows}
         </tbody>
       </table>
-      <div style="margin-top: 12px; font-size: 0.72rem; color: var(--text-secondary); text-align: center; display: flex; justify-content: space-between;">
+      <div style="margin-top: 12px; font-size: 0.72rem; color: var(--t3); text-align: center; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px;">
         <span>IS 1200 / POMI Standard</span>
-        <span style="color: var(--accent-green);">Net vs Gross Procurement Ready</span>
+        <span style="color: var(--green); font-weight: 600;">Net vs Gross Procurement Ready</span>
       </div>
     `;
     list.appendChild(summaryCard);
@@ -659,10 +660,10 @@ function setupUI() {
 
     if (!est || !est.items || est.items.length === 0) {
       pricingCard.innerHTML = `
-        <div style="text-align: center; padding: 30px 10px; color: var(--text-secondary);">
-          <div style="font-size: 1.8rem; margin-bottom: 8px;">💰</div>
-          <p style="font-weight: 700; color: #fff; margin-bottom: 4px;">Priced BOQ Generating...</p>
-          <p style="font-size: 0.8rem;">Upload or recalculate layout to view market-rate estimate.</p>
+        <div style="text-align: center; padding: 32px 12px; color: var(--t3);">
+          <div style="font-size: 1.8rem; margin-bottom: 8px;">📋</div>
+          <p style="font-weight: 700; color: var(--t1); margin-bottom: 4px;">Priced BOQ Generating...</p>
+          <p style="font-size: 0.78rem; color: var(--t3);">Upload or recalculate layout to view market-rate estimate.</p>
         </div>
       `;
       list.appendChild(pricingCard);
@@ -692,22 +693,22 @@ function setupUI() {
 
         const itemIdx = est.items.indexOf(it);
         rows += `
-          <tr class="priced-item-row" data-item-index="${itemIdx}" data-code="${it.item_code}" style="cursor: pointer;">
-            <td><strong style="color: var(--accent-cyan);">${it.item_code}</strong></td>
-            <td style="font-size: 0.76rem;" title="${it.description}">${it.description}</td>
-            <td style="text-align: right; color: #8b9bb4; font-size: 0.76rem;">${Number(netObj.qty).toLocaleString('en-IN')}</td>
-            <td style="text-align: right; color: var(--accent-green); font-size: 0.76rem; font-weight: 700;">${Number(grossObj.qty).toLocaleString('en-IN')}</td>
-            <td style="text-align: center; font-size: 0.72rem; color: #ffd700; font-weight: 700;">${netObj.unit}</td>
-            <td style="text-align: right; font-size: 0.76rem; color: #ffd700;">₹${Math.round(rate).toLocaleString('en-IN')}</td>
-            <td style="text-align: right; font-weight: 800; color: #fff; font-size: 0.8rem;">₹${Math.round(it.total_amount_inr).toLocaleString('en-IN')}</td>
+          <tr class="priced-item-row" data-item-index="${itemIdx}" data-code="${it.item_code}">
+            <td><strong style="color: var(--brand); font-family: monospace; font-size: 0.75rem;">${it.item_code}</strong></td>
+            <td style="font-size: 0.76rem; color: var(--t1);" title="${it.description}">${it.description}</td>
+            <td style="text-align: right; color: var(--t3); font-size: 0.75rem;">${Number(netObj.qty).toLocaleString('en-IN')}</td>
+            <td style="text-align: right; color: var(--green); font-size: 0.75rem; font-weight: 700;">${Number(grossObj.qty).toLocaleString('en-IN')}</td>
+            <td style="text-align: center; font-size: 0.72rem; color: var(--t3); font-weight: 600;">${netObj.unit}</td>
+            <td style="text-align: right; font-size: 0.75rem; color: var(--t2);">₹${Math.round(rate).toLocaleString('en-IN')}</td>
+            <td style="text-align: right; font-weight: 700; color: var(--t1); font-size: 0.78rem;">₹${Math.round(it.total_amount_inr).toLocaleString('en-IN')}</td>
           </tr>
         `;
       });
 
       tradeSectionsHtml += `
-        <tr style="background: rgba(0, 210, 255, 0.06); border-top: 1px solid rgba(0, 210, 255, 0.2);">
-          <td colspan="6" style="font-weight: 700; color: var(--accent-cyan); font-size: 0.76rem; text-transform: uppercase; padding: 6px 8px;">📂 ${tradeName}</td>
-          <td style="text-align: right; font-weight: 800; color: var(--accent-cyan); font-size: 0.8rem; padding: 6px 8px;">${fmtInr(tradeSubtotal)}</td>
+        <tr style="background: var(--surface-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+          <td colspan="6" style="font-weight: 700; color: var(--t1); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.3px; padding: 6px 8px;">${tradeName}</td>
+          <td style="text-align: right; font-weight: 700; color: var(--brand); font-size: 0.78rem; padding: 6px 8px;">${fmtInr(tradeSubtotal)}</td>
         </tr>
         ${rows}
       `;
@@ -715,22 +716,22 @@ function setupUI() {
 
     const benchmarkRate = Math.round(est.cost_per_sqft_inr || (est.cost_per_sqm_inr / SQM_TO_SQFT));
     pricingCard.innerHTML = `
-      <div style="background: linear-gradient(135deg, rgba(0,230,118,0.12), rgba(0,210,255,0.08)); border: 1px solid rgba(0,230,118,0.3); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+      <div class="priced-budget-header">
         <div style="display: flex; justify-content: space-between; align-items: baseline;">
-          <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Grand Total Budget (Inc. 18% GST)</span>
-          <span style="font-size: 0.75rem; color: #ffd700; font-weight: 700; text-transform: uppercase;">Grade: ${est.fitout_grade}</span>
+          <span style="font-size: 0.68rem; font-weight: 700; color: var(--t3); text-transform: uppercase; letter-spacing: 0.5px;">Grand Total Budget (Inc. 18% GST)</span>
+          <span style="font-size: 0.68rem; color: var(--brand); font-weight: 700; background: var(--brand-light); border: 1px solid var(--brand-border); padding: 2px 7px; border-radius: var(--r-full); text-transform: uppercase;">Grade: ${est.fitout_grade}</span>
         </div>
-        <div style="font-size: 1.65rem; font-weight: 800; color: #00e676; margin: 4px 0 8px 0; text-shadow: 0 0 12px rgba(0,230,118,0.35);">
+        <div style="font-size: 1.65rem; font-weight: 800; color: var(--t1); margin: 6px 0 10px 0; letter-spacing: -0.5px;">
           ${fmtInr(est.grand_total_budget_inr)}
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; font-size: 0.72rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;">
-          <div><span style="color: var(--text-secondary);">Direct Cost:</span> <strong style="color: #fff;">${fmtInr(est.direct_cost_subtotal_inr)}</strong></div>
-          <div><span style="color: var(--text-secondary);">OH & Profit (10%):</span> <strong style="color: #fff;">${fmtInr(est.contractor_overhead_profit_inr)}</strong></div>
-          <div><span style="color: var(--text-secondary);">GST (18%):</span> <strong style="color: #fff;">${fmtInr(est.gst_tax_inr)}</strong></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; font-size: 0.72rem; border-top: 1px solid var(--border); padding-top: 8px;">
+          <div><span style="color: var(--t4);">Direct Cost:</span> <strong style="color: var(--t1); display: block;">${fmtInr(est.direct_cost_subtotal_inr)}</strong></div>
+          <div><span style="color: var(--t4);">OH & Profit (10%):</span> <strong style="color: var(--t1); display: block;">${fmtInr(est.contractor_overhead_profit_inr)}</strong></div>
+          <div><span style="color: var(--t4);">GST (18%):</span> <strong style="color: var(--t1); display: block;">${fmtInr(est.gst_tax_inr)}</strong></div>
         </div>
-        <div style="margin-top: 6px; font-size: 0.72rem; color: var(--accent-cyan); display: flex; justify-content: space-between;">
-          <span>Contingency Buffer (3%): ${fmtInr(est.contingency_inr)}</span>
-          <span>Fitout Rate: <strong>₹${benchmarkRate.toLocaleString('en-IN')}/sqft</strong></span>
+        <div style="margin-top: 8px; font-size: 0.72rem; color: var(--t3); display: flex; justify-content: space-between; border-top: 1px dashed var(--border); padding-top: 6px;">
+          <span>Contingency Buffer (3%): <strong style="color: var(--t2);">${fmtInr(est.contingency_inr)}</strong></span>
+          <span>Fitout Rate: <strong style="color: var(--brand);">₹${benchmarkRate.toLocaleString('en-IN')}/sqft</strong></span>
         </div>
       </div>
 
@@ -750,9 +751,9 @@ function setupUI() {
           ${tradeSectionsHtml}
         </tbody>
       </table>
-      <div style="margin-top: 12px; font-size: 0.72rem; color: var(--text-secondary); text-align: center; display: flex; justify-content: space-between;">
+      <div style="margin-top: 12px; font-size: 0.72rem; color: var(--t3); text-align: center; display: flex; justify-content: space-between; border-top: 1px solid var(--border); padding-top: 8px;">
         <span>IS 1200 / Delhi Schedule of Rates</span>
-        <span style="color: var(--accent-green);">Click row for Rate Analysis Audit</span>
+        <span style="color: var(--green); font-weight: 600;">Click row for Rate Analysis Audit</span>
       </div>
     `;
 
@@ -783,14 +784,14 @@ function setupUI() {
       card.id = `room-card-${room.id}`;
       card.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <strong style="font-size: 0.88rem; color: ${isSelected ? 'var(--accent-green)' : (isNamed ? 'var(--accent-cyan)' : '#fff')};">${cleanName}</strong>
-          <span style="font-size: 1.05rem; font-weight: 800; color: var(--accent-green);">${areaSqft.toLocaleString('en-IN')} sqft</span>
+          <strong style="font-size: 0.86rem; color: ${isSelected ? 'var(--brand)' : 'var(--t1)'};">${cleanName}</strong>
+          <span style="font-size: 0.96rem; font-weight: 700; color: var(--green);">${areaSqft.toLocaleString('en-IN')} sqft</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 2px;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.74rem; color: var(--t3); margin-bottom: 3px;">
           <span>Perimeter: ${perimeterRft.toLocaleString('en-IN')} Rft</span>
           <span style="color: ${finish.stroke}; font-weight: 600;">${room.finish_code || 'FL-01'}: ${finish.name.split('/')[0]}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: #64748b;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.70rem; color: var(--t4);">
           <span>Confidence: ${(room.confidence * 100).toFixed(0)}%</span>
           <span>Status: ${room.status || 'RAW_MEASURED'}</span>
         </div>
@@ -822,25 +823,25 @@ function inspectRateAnalysis(item, est) {
 
   panel.innerHTML = `
     <div style="margin-bottom: 8px;">
-      <strong style="color: var(--accent-cyan); font-size: 0.95rem;">${item.item_code}</strong> — <span style="color: #fff;">${item.description}</span>
-      <div style="font-size: 0.75rem; color: #ffd700; margin-top: 2px;">Trade: ${item.category} | Grade: ${est.fitout_grade.toUpperCase()}</div>
+      <strong style="color: var(--brand); font-size: 0.92rem; font-family: monospace;">${item.item_code}</strong> — <span style="color: var(--t1); font-weight: 600;">${item.description}</span>
+      <div style="font-size: 0.72rem; color: var(--t3); margin-top: 2px;">Trade: ${item.category} | Grade: ${est.fitout_grade.toUpperCase()}</div>
     </div>
-    <div style="background: rgba(0,0,0,0.35); border: 1px solid var(--border-color); border-radius: 6px; padding: 10px; margin-bottom: 8px;">
-      <div style="font-size: 0.76rem; font-weight: 700; color: var(--accent-green); margin-bottom: 6px;">IS 1200 / POMI RATE ANALYSIS DUAL-DERIVATION:</div>
-      <div style="font-size: 0.75rem; line-height: 1.6; color: #cbd5e1;">
+    <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 8px;">
+      <div style="font-size: 0.74rem; font-weight: 700; color: var(--green); margin-bottom: 6px;">IS 1200 / POMI RATE ANALYSIS DUAL-DERIVATION:</div>
+      <div style="font-size: 0.74rem; line-height: 1.6; color: var(--t2);">
         <div>• <strong>Material Supply Component (on Gross PO Qty):</strong><br>
-          ${Number(grossObj.qty).toLocaleString('en-IN')} ${grossObj.unit} × ₹${Math.round(matRate).toLocaleString('en-IN')}/${grossObj.unit} = <span style="color: var(--accent-cyan); font-weight: 700;">₹${item.material_cost_inr.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+          ${Number(grossObj.qty).toLocaleString('en-IN')} ${grossObj.unit} × ₹${Math.round(matRate).toLocaleString('en-IN')}/${grossObj.unit} = <span style="color: var(--brand); font-weight: 700;">₹${item.material_cost_inr.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
         </div>
         <div style="margin-top: 6px;">• <strong>Labor & Installation (on Net Installed Drawing Qty):</strong><br>
-          ${Number(netObj.qty).toLocaleString('en-IN')} ${netObj.unit} × ₹${Math.round(labRate).toLocaleString('en-IN')}/${netObj.unit} = <span style="color: var(--accent-cyan); font-weight: 700;">₹${item.labor_cost_inr.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+          ${Number(netObj.qty).toLocaleString('en-IN')} ${netObj.unit} × ₹${Math.round(labRate).toLocaleString('en-IN')}/${netObj.unit} = <span style="color: var(--brand); font-weight: 700;">₹${item.labor_cost_inr.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
         </div>
-        <div style="margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px; display: flex; justify-content: space-between;">
+        <div style="margin-top: 8px; border-top: 1px solid var(--border); padding-top: 6px; display: flex; justify-content: space-between;">
           <strong>Total Direct Item Cost:</strong>
-          <span style="color: var(--accent-green); font-weight: 800; font-size: 0.88rem;">₹${item.total_amount_inr.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
+          <span style="color: var(--green); font-weight: 800; font-size: 0.88rem;">₹${item.total_amount_inr.toLocaleString('en-IN', {maximumFractionDigits: 0})}</span>
         </div>
       </div>
     </div>
-    <div style="font-size: 0.72rem; color: var(--text-secondary);">
+    <div style="font-size: 0.72rem; color: var(--t3);">
       Drawing Net: ${Number(netObj.qty).toLocaleString('en-IN')} ${netObj.unit} | Wastage Factor: ${(item.wastage_percent*100).toFixed(1)}% | Gross PO: ${Number(grossObj.qty).toLocaleString('en-IN')} ${grossObj.unit}
     </div>
   `;
@@ -867,12 +868,12 @@ function selectRoom(room) {
     const wallAreaSqft = Math.round(room.perimeter_m * 3.0 * SQM_TO_SQFT);
 
     panel.innerHTML = `
-      <div style="margin-bottom: 6px;"><strong style="color: var(--accent-cyan); font-size: 0.95rem;">${cleanName}</strong> (${room.id})</div>
+      <div style="margin-bottom: 6px;"><strong style="color: var(--brand); font-size: 0.95rem;">${cleanName}</strong> (${room.id})</div>
       <div><strong>Finish Specification:</strong> <span style="color: ${finish.stroke}; font-weight: 700;">${room.finish_code || 'FL-01'} (${finish.name})</span></div>
-      <div><strong>Net Carpet Area:</strong> <span style="color: var(--accent-green); font-weight: 700;">${areaSqft.toLocaleString('en-IN')} sqft</span></div>
+      <div><strong>Net Carpet Area:</strong> <span style="color: var(--green); font-weight: 700;">${areaSqft.toLocaleString('en-IN')} sqft</span></div>
       <div><strong>Perimeter:</strong> ${perimeterRft.toLocaleString('en-IN')} Rft | <strong>Ceiling Height:</strong> 10.0 ft</div>
       <div><strong>Wall Surface Gross:</strong> ${wallAreaSqft.toLocaleString('en-IN')} sqft | Status: <em>${room.status}</em></div>
-      <div style="margin-top: 6px; font-size: 0.75rem; color: var(--text-secondary);">
+      <div style="margin-top: 6px; font-size: 0.75rem; color: var(--t3);">
         <strong>Audit Boundary Vertices (${room.polygon.length}):</strong><br>
         <code>${room.polygon.slice(0, 4).map(p => `[${p[0].toFixed(0)}, ${p[1].toFixed(0)}]`).join(' → ')}${room.polygon.length > 4 ? ' ...' : ''}</code>
       </div>
@@ -1047,18 +1048,21 @@ function setupInteractions() {
     viewport.addEventListener('dragover', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      viewport.style.outline = "2px dashed #00e5ff";
+      viewport.style.outline = "2px dashed #E8601C";
       viewport.style.outlineOffset = "-4px";
+      viewport.style.backgroundColor = "rgba(232, 96, 28, 0.04)";
     });
     viewport.addEventListener('dragleave', (e) => {
       e.preventDefault();
       e.stopPropagation();
       viewport.style.outline = "none";
+      viewport.style.backgroundColor = "transparent";
     });
     viewport.addEventListener('drop', async (e) => {
       e.preventDefault();
       e.stopPropagation();
       viewport.style.outline = "none";
+      viewport.style.backgroundColor = "transparent";
       if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
         await handleUploadedFile(e.dataTransfer.files[0]);
       }
@@ -1297,33 +1301,63 @@ function render() {
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
 
-    const boxW = Math.min(480, canvas.width - 60);
-    const boxH = 200;
+    const boxW = Math.min(460, canvas.width - 60);
+    const boxH = 210;
     ctx.save();
-    // COG brand dashed border
-    ctx.strokeStyle = "rgba(232, 96, 28, 0.28)";
+
+    // Subtle white background card with soft elevation shadow and clean border
+    ctx.fillStyle = "#FFFFFF";
+    ctx.shadowColor = "rgba(15, 23, 42, 0.06)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 4;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(cx - boxW / 2, cy - boxH / 2, boxW, boxH, 12);
+    else ctx.rect(cx - boxW / 2, cy - boxH / 2, boxW, boxH);
+    ctx.fill();
+
+    ctx.shadowColor = "transparent";
+    ctx.strokeStyle = "#E2E8F0";
     ctx.lineWidth = 1.5;
-    ctx.setLineDash([8, 6]);
-    ctx.strokeRect(cx - boxW / 2, cy - boxH / 2, boxW, boxH);
+    ctx.setLineDash([6, 5]);
+    ctx.stroke();
     ctx.setLineDash([]);
 
-    // Upload icon box
-    ctx.fillStyle = "rgba(232, 96, 28, 0.10)";
+    // Icon container (soft warm orange tint)
+    ctx.fillStyle = "#FFF4EE";
     ctx.beginPath();
-    ctx.roundRect(cx - 22, cy - boxH/2 + 24, 44, 44, 8);
+    if (ctx.roundRect) ctx.roundRect(cx - 22, cy - boxH/2 + 24, 44, 44, 10);
+    else ctx.rect(cx - 22, cy - boxH/2 + 24, 44, 44);
     ctx.fill();
+
+    // COG orange icon
     ctx.fillStyle = "#E8601C";
-    ctx.font = "22px sans-serif";
+    ctx.font = "20px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("↑", cx, cy - boxH/2 + 52);
+    ctx.textBaseline = "middle";
+    ctx.fillText("↑", cx, cy - boxH/2 + 46);
 
-    ctx.fillStyle = "#EDF0F4";
-    ctx.font = "600 16px 'Inter', sans-serif";
-    ctx.fillText("Drop drawing here or click Upload", cx, cy + 4);
+    // Headings
+    ctx.fillStyle = "#0F172A";
+    ctx.font = "600 15px 'Inter', sans-serif";
+    ctx.fillText("Upload Architectural Drawing", cx, cy + 6);
 
-    ctx.fillStyle = "#404858";
-    ctx.font = "12px 'Inter', sans-serif";
-    ctx.fillText("Vector PDF · CAD DXF · Auto-scale calibration", cx, cy + 26);
+    ctx.fillStyle = "#64748B";
+    ctx.font = "400 12.5px 'Inter', sans-serif";
+    ctx.fillText("Vector PDF or CAD DXF · Automatic scale calibration & BOQ", cx, cy + 28);
+
+    // Pill badge at bottom
+    const pillW = 120;
+    const pillH = 28;
+    const pillY = cy + 48;
+    ctx.fillStyle = "#E8601C";
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(cx - pillW / 2, pillY, pillW, pillH, 6);
+    else ctx.rect(cx - pillW / 2, pillY, pillW, pillH);
+    ctx.fill();
+
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "600 11.5px 'Inter', sans-serif";
+    ctx.fillText("Browse Files", cx, pillY + 14);
 
     ctx.restore();
     return;
@@ -1340,12 +1374,6 @@ function render() {
     ctx.strokeStyle = style.color;
     ctx.lineWidth = style.width;
     if (style.dash && style.dash.length > 0) ctx.setLineDash(style.dash);
-
-    // Subtle glow for glass / partitions
-    if (style.color === "#00e5ff") {
-      ctx.shadowColor = "rgba(0, 229, 255, 0.4)";
-      ctx.shadowBlur = 4;
-    }
 
     ctx.beginPath();
     ctx.moveTo(p1.x, p1.y);
@@ -1380,29 +1408,25 @@ function render() {
       ctx.closePath();
 
       if (isSelected) {
-        ctx.fillStyle = "rgba(0, 230, 118, 0.32)";
-        ctx.strokeStyle = "#00e676";
-        ctx.lineWidth = 3.5;
-        ctx.shadowColor = "rgba(0, 230, 118, 0.6)";
-        ctx.shadowBlur = 12;
-      } else if (isHovered) {
-        ctx.fillStyle = "rgba(0, 230, 118, 0.18)";
-        ctx.strokeStyle = "#00e676";
+        ctx.fillStyle = "rgba(232, 96, 28, 0.16)";
+        ctx.strokeStyle = "#E8601C";
         ctx.lineWidth = 2.5;
+      } else if (isHovered) {
+        ctx.fillStyle = "rgba(232, 96, 28, 0.08)";
+        ctx.strokeStyle = "#E8601C";
+        ctx.lineWidth = 1.8;
       } else if (isDimmed) {
-        ctx.fillStyle = "rgba(255, 255, 255, 0.015)";
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.10)";
+        ctx.fillStyle = "rgba(241, 245, 249, 0.4)";
+        ctx.strokeStyle = "rgba(203, 213, 225, 0.6)";
         ctx.lineWidth = 1;
       } else if (searchQuery && matchesSearch) {
-        ctx.fillStyle = "rgba(255, 215, 0, 0.20)";
-        ctx.strokeStyle = "#ffd700";
-        ctx.lineWidth = 2.5;
-        ctx.shadowColor = "rgba(255, 215, 0, 0.5)";
-        ctx.shadowBlur = 10;
+        ctx.fillStyle = "rgba(245, 158, 11, 0.18)";
+        ctx.strokeStyle = "#D97706";
+        ctx.lineWidth = 2.0;
       } else {
         ctx.fillStyle = roomFinish.fill;
         ctx.strokeStyle = roomFinish.stroke;
-        ctx.lineWidth = 1.6;
+        ctx.lineWidth = 1.5;
       }
 
       ctx.fill();
@@ -1435,23 +1459,27 @@ function render() {
 
           // Glassmorphic pill badge
           ctx.save();
-          ctx.fillStyle = isSelected ? "rgba(0, 230, 118, 0.95)" : "rgba(10, 14, 20, 0.88)";
+          ctx.fillStyle = isSelected ? "#E8601C" : "rgba(255, 255, 255, 0.96)";
+          ctx.shadowColor = "rgba(15, 23, 42, 0.08)";
+          ctx.shadowBlur = 8;
+          ctx.shadowOffsetY = 2;
           ctx.beginPath();
           if (ctx.roundRect) ctx.roundRect(center.x - pillW / 2, center.y - pillH / 2, pillW, pillH, 6);
           else ctx.rect(center.x - pillW / 2, center.y - pillH / 2, pillW, pillH);
           ctx.fill();
 
-          ctx.strokeStyle = isSelected ? "#00e676" : roomFinish.stroke;
+          ctx.shadowColor = "transparent";
+          ctx.strokeStyle = isSelected ? "#C2410C" : "#E2E8F0";
           ctx.lineWidth = 1.2;
           ctx.stroke();
 
           // Title
-          ctx.fillStyle = isSelected ? "#000000" : "#ffffff";
+          ctx.fillStyle = isSelected ? "#FFFFFF" : "#0F172A";
           ctx.textAlign = "center";
           ctx.fillText(titleText, center.x, center.y - 3);
 
           // Finish / Area Subtext
-          ctx.fillStyle = isSelected ? "#064e3b" : roomFinish.stroke;
+          ctx.fillStyle = isSelected ? "#FFF4EE" : (roomFinish ? roomFinish.stroke : "#64748B");
           ctx.font = "bold 9.5px Inter, sans-serif";
           ctx.fillText(finishText, center.x, center.y + 11);
           ctx.restore();
@@ -1474,9 +1502,9 @@ function render() {
 
       ctx.save();
       if (isLinear) {
-        // Radiant Amber/Gold Linear Light Bar
-        ctx.fillStyle = "rgba(255, 193, 7, 0.95)";
-        ctx.strokeStyle = "#ffe082";
+        // Radiant Amber Linear Light Bar
+        ctx.fillStyle = "#D97706";
+        ctx.strokeStyle = "#B45309";
         ctx.lineWidth = 1.5;
         const w = Math.max(18, 28 * scale * 0.05);
         const h = Math.max(7, 9 * scale * 0.05);
@@ -1487,8 +1515,8 @@ function render() {
         ctx.stroke();
       } else if (isConcealed) {
         // Emerald Concealed Downlight Circle
-        ctx.fillStyle = "rgba(0, 230, 118, 0.95)";
-        ctx.strokeStyle = "#ffffff";
+        ctx.fillStyle = "#059669";
+        ctx.strokeStyle = "#047857";
         ctx.lineWidth = 1.2;
         const r = Math.max(5, Math.min(10, 8 * scale * 0.05));
         ctx.beginPath();
@@ -1496,9 +1524,9 @@ function render() {
         ctx.fill();
         ctx.stroke();
       } else if (isHanging) {
-        // Cyan Pendant Light Ring
-        ctx.fillStyle = "rgba(0, 210, 255, 0.95)";
-        ctx.strokeStyle = "#ffffff";
+        // Architectural Blue Pendant Light Ring
+        ctx.fillStyle = "#0284C7";
+        ctx.strokeStyle = "#0369A1";
         ctx.lineWidth = 1.2;
         const r = Math.max(5, Math.min(10, 8 * scale * 0.05));
         ctx.beginPath();
@@ -1506,9 +1534,9 @@ function render() {
         ctx.fill();
         ctx.stroke();
       } else if (isDecorative) {
-        // Magenta Executive Rosette
-        ctx.fillStyle = "rgba(233, 30, 99, 0.95)";
-        ctx.strokeStyle = "#ffffff";
+        // Rosette
+        ctx.fillStyle = "#DB2777";
+        ctx.strokeStyle = "#BE185D";
         ctx.lineWidth = 2;
         const r = Math.max(7, Math.min(14, 12 * scale * 0.05));
         ctx.beginPath();
@@ -1517,7 +1545,7 @@ function render() {
         ctx.stroke();
       } else if (isWorkstation) {
         // Subtle Workstation Point
-        ctx.fillStyle = "rgba(100, 181, 246, 0.75)";
+        ctx.fillStyle = "#475569";
         ctx.beginPath();
         ctx.arc(scr.x, scr.y, Math.max(3, 4 * scale * 0.05), 0, Math.PI * 2);
         ctx.fill();
@@ -1528,15 +1556,13 @@ function render() {
 }
 
 function drawGrid() {
-  const step = 50;
-  ctx.strokeStyle = "rgba(255, 255, 255, 0.025)";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
+  const step = 40;
+  ctx.fillStyle = "rgba(15, 23, 42, 0.07)";
   for (let x = 0; x < canvas.width; x += step) {
-    ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height);
+    for (let y = 0; y < canvas.height; y += step) {
+      ctx.beginPath();
+      ctx.arc(x, y, 0.9, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
-  for (let y = 0; y < canvas.height; y += step) {
-    ctx.moveTo(0, y); ctx.lineTo(canvas.width, y);
-  }
-  ctx.stroke();
 }
