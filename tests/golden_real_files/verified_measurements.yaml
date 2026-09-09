@@ -1,0 +1,211 @@
+benchmark_title: Generated File-Based Golden Benchmark (Synthetic Programmatic DXF/PDF)
+benchmark_note: "Physical files created programmatically for formula and deduction verification. Not real client site drawings."
+drawings:
+  PROJECT_01_GROUND_FLOOR.dxf:
+    format: DXF
+    verified:
+      rooms:
+        CONFERENCE ROOM:
+          area_sqm: 41.72
+          perimeter_m: 25.84
+        RECEPTION:
+          area_sqm: 28.5
+          perimeter_m: 21.4
+        OPEN OFFICE:
+          area_sqm: 85.0
+          perimeter_m: 37.0
+      doors:
+        total: 4
+        single_leaf: 2
+        double_leaf: 2
+      flooring:
+        FL-01: 113.5
+        FL-02: 41.72
+      skirting:
+        SK-01: 53.8
+        SK-02: 24.84
+  PROJECT_02_EXECUTIVE_SUITE.dxf:
+    format: DXF
+    verified:
+      rooms:
+        MD CABIN:
+          area_sqm: 36.0
+          perimeter_m: 24.0
+        PRIVATE LOUNGE:
+          area_sqm: 24.0
+          perimeter_m: 20.0
+        RESTROOM:
+          area_sqm: 8.0
+          perimeter_m: 12.0
+      doors:
+        total: 3
+        single_leaf: 3
+        double_leaf: 0
+      flooring:
+        FL-01: 8.0
+        FL-02: 60.0
+      skirting:
+        SK-01: 11.0
+        SK-02: 42.0
+  PROJECT_03_TECH_HUB.dxf:
+    format: DXF
+    verified:
+      rooms:
+        SERVER ROOM:
+          area_sqm: 18.0
+          perimeter_m: 18.0
+        DEV BAY:
+          area_sqm: 96.0
+          perimeter_m: 40.0
+        PHONE BOOTH:
+          area_sqm: 4.5
+          perimeter_m: 9.0
+      doors:
+        total: 3
+        single_leaf: 2
+        double_leaf: 1
+      flooring:
+        FL-01: 118.5
+      skirting:
+        SK-01: 63.2
+  PROJECT_04_CLINIC.dxf:
+    format: DXF
+    verified:
+      rooms:
+        CONSULTATION:
+          area_sqm: 22.0
+          perimeter_m: 19.0
+        EXAMINATION:
+          area_sqm: 18.0
+          perimeter_m: 17.0
+        WAITING AREA:
+          area_sqm: 35.0
+          perimeter_m: 24.0
+      doors:
+        total: 3
+        single_leaf: 2
+        double_leaf: 1
+      flooring:
+        FL-01: 75.0
+      skirting:
+        SK-01: 56.2
+  PROJECT_05_DESIGN_AGENCY.dxf:
+    format: DXF
+    verified:
+      rooms:
+        DESIGN STUDIO:
+          area_sqm: 54.0
+          perimeter_m: 30.0
+        BRAINSTORM:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        PANTRY:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+      doors:
+        total: 3
+        single_leaf: 2
+        double_leaf: 1
+      flooring:
+        FL-01: 16.0
+        FL-02: 84.0
+      skirting:
+        SK-01: 15.0
+        SK-02: 49.2
+  PROJECT_06_LAW_FIRM.dxf:
+    format: DXF
+    verified:
+      rooms:
+        SENIOR PARTNER:
+          area_sqm: 32.0
+          perimeter_m: 24.0
+        LAW LIBRARY:
+          area_sqm: 40.0
+          perimeter_m: 26.0
+        MEETING ROOM:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 3
+        single_leaf: 2
+        double_leaf: 1
+      flooring:
+        FL-01: 20.0
+        FL-02: 72.0
+      skirting:
+        SK-01: 17.0
+        SK-02: 47.2
+  PROJECT_07_FITNESS_STUDIO.dxf:
+    format: DXF
+    verified:
+      rooms:
+        YOGA STUDIO:
+          area_sqm: 70.0
+          perimeter_m: 34.0
+        LOCKER ROOM:
+          area_sqm: 25.0
+          perimeter_m: 20.0
+        RECEPTION:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 3
+        single_leaf: 2
+        double_leaf: 1
+      flooring:
+        FL-01: 115.0
+      skirting:
+        SK-01: 68.2
+  PROJECT_08_RETAIL_SHOWROOM.dxf:
+    format: DXF
+    verified:
+      rooms:
+        SHOWROOM FLOOR:
+          area_sqm: 110.0
+          perimeter_m: 42.0
+        FITTING AREA:
+          area_sqm: 15.0
+          perimeter_m: 16.0
+        STOCK ROOM:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 3
+        single_leaf: 2
+        double_leaf: 1
+      flooring:
+        FL-01: 145.0
+      skirting:
+        SK-01: 72.2
+  PROJECT_09_TRAINING_CENTRE.pdf:
+    format: PDF
+    verified:
+      rooms:
+        LECTURE HALL:
+          area_sqm: 60.0
+          perimeter_m: 32.0
+        COMPUTER LAB:
+          area_sqm: 45.0
+          perimeter_m: 28.0
+      doors:
+        total: 0
+      flooring:
+        FL-01: 105.0
+      skirting:
+        SK-01: 60.0
+  PROJECT_10_COWORKING.pdf:
+    format: PDF
+    verified:
+      rooms:
+        HOT DESK ZONE:
+          area_sqm: 80.0
+          perimeter_m: 36.0
+        MEETING POD:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+      doors:
+        total: 0
+      flooring:
+        FL-01: 92.0
+      skirting:
+        SK-01: 50.0

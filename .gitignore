@@ -1,0 +1,48 @@
+# Git ignore patterns for QS Engine
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Environment variables (contains API keys!)
+.env
+.env.local
+
+# Test / runtime artifacts
+scratch/*.xlsx
+scratch/*.csv
+scratch/uat_*.xlsx
+viewer/cli_takeoff.xlsx
+viewer/cli_takeoff.csv
+
+# Uploaded drawings (user data, not part of repo)
+uploads/
+*.pdf.tmp
+
+# Build artifacts
+*.zip
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.suo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Pytest cache
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Logs
+*.log

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QS Quantification Engine — Interior Takeoff & Evidence Workstation</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Header Bar -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-icon">QS</div>
+      <div>
+        <h1>Quantification Engine</h1>
+        <div style="font-size: 0.72rem; color: var(--accent-cyan); font-weight: 600; letter-spacing: 0.4px;">INTERIOR FIT-OUT WORKSTATION</div>
+      </div>
+    </div>
+    <div class="meta-badges" style="align-items: center; gap: 8px;">
+      <!-- Primary Drawing Upload Input -->
+      <label class="ctrl-btn upload-btn" id="btnUploadLayout" title="Upload custom DXF or Vector PDF CAD layout" style="background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid #38bdf8; color: #fff; font-weight: 700; padding: 6px 16px; border-radius: 6px; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.35); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+        <span style="font-size: 0.95rem;">📂</span>
+        <span>Upload Drawing</span>
+        <input type="file" id="fileInput" accept=".dxf,.pdf" style="display: none;">
+      </label>
+
+      <!-- Auto-Calibrated Scale Indicator (Zero Manual Effort) -->
+      <div class="badge" id="scaleIndicatorBadge" title="AI automatically calculates drawing scale from dimension witness lines and geometry" style="background: rgba(14, 165, 233, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-weight: 600; display: flex; align-items: center; gap: 5px; padding: 5px 11px;">
+        <span>🎯</span>
+        <span id="scaleLabelText">Auto-Scale: Standby</span>
+      </div>
+
+      <!-- Secondary Benchmark Samples Selector (Tucked away for quick testing) -->
+      <div class="header-ctrl-group" style="opacity: 0.75;" title="Load internal CAD benchmark test cases">
+        <select id="sampleSelect" class="header-select" style="max-width: 170px; font-size: 0.73rem; border-color: rgba(255,255,255,0.18);">
+          <option value="" disabled selected>📁 Sample Benchmarks ▾</option>
+        </select>
+      </div>
+
+      <!-- Wastage Override Selection -->
+      <div class="header-ctrl-group">
+        <span class="ctrl-label">WASTAGE:</span>
+        <select id="wastageSelect" class="header-select" style="color: var(--accent-green);">
+          <option value="standard" selected>Standard (5-7%)</option>
+          <option value="conservative">Conservative (8-10%)</option>
+          <option value="tight">Tight Fitout (3%)</option>
+          <option value="zero">Net Only (0%)</option>
+        </select>
+      </div>
+
+      <!-- Fitout Grade Selection -->
+      <div class="header-ctrl-group">
+        <span class="ctrl-label">GRADE:</span>
+        <select id="gradeSelect" class="header-select" style="color: #ffd700;">
+          <option value="standard" selected>Standard (1.0x)</option>
+          <option value="economy">Economy (0.75x)</option>
+          <option value="grade_a">Luxury (1.45x)</option>
+        </select>
+      </div>
+
+      <button class="ctrl-btn" id="btnRunTakeoff" style="display: none; background: #00e676; color: #000; font-weight: 700; cursor: pointer;">⚡ Recalculate</button>
+      <div class="badge" id="drawingMeta">No Drawing Loaded</div>
+      <div class="badge badge-green" id="engineStatusBadge">Engine Ready</div>
+    </div>
+  </header>
+
+  <!-- Main Workstation Layout -->
+  <main class="main-container">
+    <!-- Interactive CAD Canvas Viewport -->
+    <section class="canvas-container" id="canvasViewport" aria-label="CAD Drawing Canvas">
+      <canvas id="cadCanvas"></canvas>
+      
+      <!-- Trade Mode Filter Bar Floating Top Center -->
+      <div class="trade-filter-bar" id="tradeFilterBar" role="toolbar" aria-label="Interior Trade Filter Modes">
+        <button class="trade-btn active" data-trade="all" title="View all architectural and engineering layers">🌟 Master (All)</button>
+        <button class="trade-btn" data-trade="flooring" title="Isolate floor finishes, skirting baseboards, and floor areas">🪵 Flooring (FL/SK)</button>
+        <button class="trade-btn" data-trade="partitions" title="Isolate drywalls, glass partitions, and demountable walls">🧱 Partitions (PT/GL)</button>
+        <button class="trade-btn" data-trade="doors" title="Isolate door swings, pocket sliders, and openings">🚪 Doors (DR)</button>
+        <button class="trade-btn" data-trade="ceilings" title="Isolate false ceilings, coffer drops, and soffits">🏢 Ceilings (CL)</button>
+        <button class="trade-btn" data-trade="fixtures" title="Isolate furniture, workstations, and lighting">🪑 Furniture (FN)</button>
+        <button class="trade-btn" data-trade="joinery" title="Isolate storages, millwork, and consoles">🗄️ Joinery (MW)</button>
+        <button class="trade-btn" data-trade="av" title="Isolate AV displays and presentation screens">📺 AV & Screens (AV)</button>
+      </div>
+
+      <!-- Canvas Navigation Controls Floating Bottom Left -->
+      <div class="viewport-controls">
+        <button class="ctrl-btn" id="btnZoomIn" title="Zoom In">+</button>
+        <button class="ctrl-btn" id="btnZoomOut" title="Zoom Out">−</button>
+        <button class="ctrl-btn" id="btnReset" title="Fit to Screen">Fit to Screen</button>
+        <div class="zoom-info" id="zoomLevelInfo">100%</div>
+      </div>
+    </section>
+
+    <!-- Inspection Sidebar -->
+    <aside class="sidebar">
+      <!-- Section 1: Search & Finish Quick Filters -->
+      <div class="panel-section" style="padding-bottom: 10px;">
+        <div class="search-box-container">
+          <input type="text" id="spaceSearchInput" placeholder="🔍 Search space or finish code (e.g. Master Bedroom, FL-01)..." />
+          <button id="btnClearSearch" title="Clear filter">✕</button>
+        </div>
+        <div class="finish-filter-bar" id="finishFilterBar">
+          <!-- Dynamic finish pills inserted here -->
+        </div>
+      </div>
+
+      <!-- Section 2: CAD Layer Filters (Collapsible) -->
+      <details class="panel-section panel-accordion" id="layersAccordion">
+        <summary class="panel-title">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span>📐 CAD Layers</span>
+            <span class="active-layers-count" id="layersCountBadge">0 active</span>
+          </div>
+          <div style="display: flex; gap: 4px;" onclick="event.stopPropagation();">
+            <button class="mini-btn" id="btnSelectAllLayers" title="Show all layers">All</button>
+            <button class="mini-btn" id="btnDeselectAllLayers" title="Hide all layers">None</button>
+          </div>
+        </summary>
+        <div class="layers-grid" id="layersGrid" style="margin-top: 8px;"></div>
+      </details>
+
+      <!-- Section 2.5: AI Drawing Intelligence Panel (Collapsible) -->
+      <details class="panel-section panel-accordion" id="aiIntelligenceSection" open>
+        <summary class="panel-title" style="color: #00d2ff;">
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span>🤖 AI Drawing Intelligence</span>
+          </div>
+          <span class="badge badge-green" id="aiStatusBadge" style="font-size: 0.65rem; padding: 2px 6px;">Active</span>
+        </summary>
+        <div id="aiInsightsCard" style="background: rgba(0, 210, 255, 0.05); border: 1px solid rgba(0, 210, 255, 0.2); border-radius: 6px; padding: 8px; font-size: 0.74rem; color: #cbd5e1; line-height: 1.45; margin-top: 8px;">
+          <span style="color: var(--text-secondary);">Load or upload a drawing to trigger AI drawing comprehension.</span>
+        </div>
+      </details>
+
+      <!-- Section 3: Quantities & BOQ Summary (Primary View) -->
+      <div class="panel-section" style="padding-bottom: 8px; border-bottom: none;">
+        <div class="panel-title">
+          <span style="font-weight: 800; color: #fff;">📊 Quantities & BOQ</span>
+          <div style="display: flex; gap: 6px;">
+            <button class="ctrl-btn" id="btnExportExcel" style="font-size: 0.72rem; padding: 2px 8px; background: #1b5e20; color: #fff; cursor: pointer;">📊 Excel</button>
+            <button class="ctrl-btn" id="btnExportCsv" style="font-size: 0.72rem; padding: 2px 8px; background: #01579b; color: #fff; cursor: pointer;">📄 CSV</button>
+          </div>
+        </div>
+        <!-- View Mode Switcher -->
+        <div class="view-tabs">
+          <button class="tab-btn active" id="tabSummary">📊 BOQ Summary</button>
+          <button class="tab-btn" id="tabPricing">💰 Priced BOQ</button>
+          <button class="tab-btn" id="tabRooms">🏢 Room Schedule</button>
+        </div>
+      </div>
+
+      <div class="takeoff-container" id="takeoffList" role="region" aria-label="Takeoff Line Items">
+        <!-- Injected dynamically by viewer.js -->
+      </div>
+
+      <!-- Section 4: Evidence & Lineage Inspection (Collapsible Footer Drawer) -->
+      <details class="evidence-panel" id="evidencePanel">
+        <summary class="evidence-title" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none;">
+          <span>🔍 AUDIT TRAIL & MEASUREMENT EVIDENCE</span>
+          <span style="font-size: 0.7rem; color: var(--accent-cyan);">▾</span>
+        </summary>
+        <div class="evidence-content" id="evidenceContent" style="margin-top: 6px;">
+          Select any room or takeoff card above to inspect its exact mathematical derivation and source polygon boundary.
+        </div>
+      </details>
+    </aside>
+  </main>
+
+  <script src="viewer.js"></script>
+</body>
+</html>

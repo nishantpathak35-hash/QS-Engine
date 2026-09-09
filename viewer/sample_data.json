@@ -1,0 +1,309 @@
+{
+  "drawing": {
+    "filename": "sample_office.dxf",
+    "drawing_number": "A-101",
+    "revision": "03",
+    "units": "mm",
+    "scale_to_mm": 1.0
+  },
+  "layers": [
+    "A-ANNO",
+    "A-DOOR",
+    "A-WALL"
+  ],
+  "segments": [
+    {
+      "x1": 0.0,
+      "y1": 0.0,
+      "x2": 3000.0,
+      "y2": 0.0,
+      "layer": "A-WALL",
+      "handle": "33"
+    },
+    {
+      "x1": 3900.0,
+      "y1": 0.0,
+      "x2": 6000.0,
+      "y2": 0.0,
+      "layer": "A-WALL",
+      "handle": "34"
+    },
+    {
+      "x1": 6000.0,
+      "y1": 0.0,
+      "x2": 7000.0,
+      "y2": 0.0,
+      "layer": "A-WALL",
+      "handle": "35"
+    },
+    {
+      "x1": 7900.0,
+      "y1": 0.0,
+      "x2": 10000.0,
+      "y2": 0.0,
+      "layer": "A-WALL",
+      "handle": "36"
+    },
+    {
+      "x1": 10000.0,
+      "y1": 0.0,
+      "x2": 10000.0,
+      "y2": 4000.0,
+      "layer": "A-WALL",
+      "handle": "37"
+    },
+    {
+      "x1": 10000.0,
+      "y1": 4000.0,
+      "x2": 0.0,
+      "y2": 4000.0,
+      "layer": "A-WALL",
+      "handle": "38"
+    },
+    {
+      "x1": 0.0,
+      "y1": 4000.0,
+      "x2": 0.0,
+      "y2": 0.0,
+      "layer": "A-WALL",
+      "handle": "39"
+    },
+    {
+      "x1": 6000.0,
+      "y1": 0.0,
+      "x2": 6000.0,
+      "y2": 4000.0,
+      "layer": "A-WALL",
+      "handle": "3A"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "R-001",
+      "name": "CONFERENCE ROOM",
+      "net_area_sqm": 24.0,
+      "gross_area_sqm": 24.0,
+      "perimeter_m": 20.0,
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "polygon": [
+        [
+          3000.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          4000.0
+        ],
+        [
+          6000.0,
+          4000.0
+        ],
+        [
+          6000.0,
+          0.0
+        ],
+        [
+          3900.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "id": "R-002",
+      "name": "EXECUTIVE CABIN",
+      "net_area_sqm": 16.0,
+      "gross_area_sqm": 16.0,
+      "perimeter_m": 16.0,
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "polygon": [
+        [
+          7000.0,
+          0.0
+        ],
+        [
+          6000.0,
+          0.0
+        ],
+        [
+          6000.0,
+          4000.0
+        ],
+        [
+          10000.0,
+          4000.0
+        ],
+        [
+          10000.0,
+          0.0
+        ],
+        [
+          7900.0,
+          0.0
+        ]
+      ]
+    }
+  ],
+  "takeoff": [
+    {
+      "id": "TO-0001",
+      "item_code": "FL-01",
+      "description": "Vitrified Tile Flooring in CONFERENCE ROOM",
+      "location": "CONFERENCE ROOM",
+      "quantity": 24.0,
+      "raw_quantity": 24.0,
+      "unit": "sqm",
+      "formula": "Room polygon area = 24.000 sqm",
+      "source_entities": [
+        "R-001"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-FL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.508117"
+    },
+    {
+      "id": "TO-0002",
+      "item_code": "SK-01",
+      "description": "Perimeter Skirting (100mm ht) in CONFERENCE ROOM",
+      "location": "CONFERENCE ROOM",
+      "quantity": 19.1,
+      "raw_quantity": 19.1,
+      "unit": "m",
+      "formula": "Perimeter (20.000m) - Door deduction (0.900m) = 19.100 m",
+      "source_entities": [
+        "R-001",
+        "OP-1"
+      ],
+      "confidence": 0.97,
+      "status": "auto_measured",
+      "rule_id": "QS-SK-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.508117"
+    },
+    {
+      "id": "TO-0003",
+      "item_code": "CL-01",
+      "description": "Gypsum False Ceiling in CONFERENCE ROOM",
+      "location": "CONFERENCE ROOM",
+      "quantity": 24.0,
+      "raw_quantity": 24.0,
+      "unit": "sqm",
+      "formula": "Ceiling area = 24.000 sqm",
+      "source_entities": [
+        "R-001"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-CL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.508117"
+    },
+    {
+      "id": "TO-0004",
+      "item_code": "FL-01",
+      "description": "Vitrified Tile Flooring in EXECUTIVE CABIN",
+      "location": "EXECUTIVE CABIN",
+      "quantity": 16.0,
+      "raw_quantity": 16.0,
+      "unit": "sqm",
+      "formula": "Room polygon area = 16.000 sqm",
+      "source_entities": [
+        "R-002"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-FL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.508117"
+    },
+    {
+      "id": "TO-0005",
+      "item_code": "SK-01",
+      "description": "Perimeter Skirting (100mm ht) in EXECUTIVE CABIN",
+      "location": "EXECUTIVE CABIN",
+      "quantity": 15.1,
+      "raw_quantity": 15.1,
+      "unit": "m",
+      "formula": "Perimeter (16.000m) - Door deduction (0.900m) = 15.100 m",
+      "source_entities": [
+        "R-002",
+        "OP-2"
+      ],
+      "confidence": 0.97,
+      "status": "auto_measured",
+      "rule_id": "QS-SK-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.508117"
+    },
+    {
+      "id": "TO-0006",
+      "item_code": "CL-01",
+      "description": "Gypsum False Ceiling in EXECUTIVE CABIN",
+      "location": "EXECUTIVE CABIN",
+      "quantity": 16.0,
+      "raw_quantity": 16.0,
+      "unit": "sqm",
+      "formula": "Ceiling area = 16.000 sqm",
+      "source_entities": [
+        "R-002"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-CL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.508117"
+    },
+    {
+      "id": "TO-0007",
+      "item_code": "DR-01",
+      "description": "Single Leaf Flush Doors",
+      "location": "Project Level",
+      "quantity": 2.0,
+      "raw_quantity": 2.0,
+      "unit": "nos",
+      "formula": "Count of matching door blocks = 2 Nos",
+      "source_entities": [
+        "42",
+        "44"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-DR-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:49:41.510126"
+    }
+  ],
+  "totals": {
+    "FL-01": {
+      "description": "Vitrified Tile Flooring in CONFERENCE ROOM",
+      "total_quantity": 40.0,
+      "unit": "sqm",
+      "count": 2
+    },
+    "SK-01": {
+      "description": "Perimeter Skirting (100mm ht) in CONFERENCE ROOM",
+      "total_quantity": 34.2,
+      "unit": "m",
+      "count": 2
+    },
+    "CL-01": {
+      "description": "Gypsum False Ceiling in CONFERENCE ROOM",
+      "total_quantity": 40.0,
+      "unit": "sqm",
+      "count": 2
+    },
+    "DR-01": {
+      "description": "Single Leaf Flush Doors",
+      "total_quantity": 2.0,
+      "unit": "nos",
+      "count": 1
+    }
+  }
+}

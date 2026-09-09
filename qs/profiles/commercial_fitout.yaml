@@ -1,0 +1,222 @@
+# QS Quantification Engine — Commercial Interior Fit-Out Master Profile
+# Authored per statutory IS 1200 / POMI / CPWD Measurement Specifications
+# Verified by Senior Chief QS Engineer (25+ Years Experience)
+
+profile_id: commercial_fitout_v1
+name: Commercial Interior Fit-Out Master Schedule
+version: 1.0.0
+standard: IS 1200 / POMI / CPWD
+
+rules:
+  # -------------------------------------------------------------
+  # Trade 1: Flooring Finishes (IS 1200 Part 11)
+  # -------------------------------------------------------------
+  - id: QS-FL-001
+    item_code: FL-01
+    category: flooring
+    description: 600x1200mm Vitrified Tile Flooring (Full Body, Matt Finish)
+    unit: sqm
+    target: room
+    applies_when:
+      finish_code: "FL-01"
+    calculator: is1200.flooring_with_door_rebates
+    deduct_voids_over_sqm: 0.20
+    door_rebate_added: false
+    formula_template: "Net Room Area + Door Frame Rebate"
+
+  - id: QS-FL-002
+    item_code: FL-02
+    category: flooring
+    description: 500x500mm Nylon Modular Carpet Tiles with Cushion Backing
+    unit: sqm
+    target: room
+    applies_when:
+      finish_code: "FL-02"
+    calculator: is1200.flooring_with_door_rebates
+    deduct_voids_over_sqm: 0.20
+    door_rebate_added: false
+    formula_template: "Net Room Area (stopped at door threshold reducer)"
+
+  - id: QS-FL-003
+    item_code: FL-03
+    category: flooring
+    description: 2mm Heterogeneous Antibacterial Heavy Duty Vinyl Flooring
+    unit: sqm
+    target: room
+    applies_when:
+      finish_code: "FL-03"
+    calculator: is1200.flooring_with_door_rebates
+    deduct_voids_over_sqm: 0.20
+
+  - id: QS-FL-004
+    item_code: FL-04
+    category: flooring
+    description: Anti-Skid Vitrified Tile Flooring (Pantry & Cafeteria)
+    unit: sqm
+    target: room
+    applies_when:
+      finish_code: "FL-04"
+    calculator: is1200.flooring_with_door_rebates
+    deduct_voids_over_sqm: 0.20
+
+  - id: QS-FL-005
+    item_code: FL-05
+    category: flooring
+    description: Heavy Duty Anti-Static Raised Access Flooring (Server & UPS Room)
+    unit: sqm
+    target: room
+    applies_when:
+      finish_code: "FL-05"
+    calculator: is1200.flooring_with_door_rebates
+    deduct_voids_over_sqm: 0.20
+
+
+  # -------------------------------------------------------------
+  # Trade 2: Skirting Finishes (IS 1200 Part 11)
+  # -------------------------------------------------------------
+  - id: QS-SK-001
+    item_code: SK-01
+    category: skirting
+    description: 100mm High Matching Vitrified Tile Skirting
+    unit: m
+    target: room
+    applies_when:
+      skirting_finish_code: "SK-01"
+    calculator: is1200.skirting_with_deductions
+    deduct_openings: true
+    formula_template: "Internal Perimeter minus Door Openings"
+
+  - id: QS-SK-002
+    item_code: SK-02
+    category: skirting
+    description: 75mm High Anodized Aluminum Shadow Recess Skirting
+    unit: m
+    target: room
+    applies_when:
+      skirting_finish_code: "SK-02"
+    calculator: is1200.skirting_with_deductions
+    deduct_openings: true
+
+  # -------------------------------------------------------------
+  # Trade 3: False Ceilings (IS 1200 Part 7)
+  # -------------------------------------------------------------
+  - id: QS-CL-001
+    item_code: CL-01
+    category: ceiling
+    description: 12.5mm Gypsum Board Seamless False Ceiling with GI Framing
+    unit: sqm
+    target: room
+    applies_when:
+      ceiling_finish_code: "CL-01"
+    calculator: is1200.ceiling_with_thresholds
+    deduct_openings_over_sqm: 0.40
+    formula_template: "Gross Area minus cutouts >0.40 sqm (IS 1200 Part 7)"
+
+  - id: QS-CL-002
+    item_code: CL-02
+    category: ceiling
+    description: 600x600mm Mineral Fiber Acoustic Modular Grid Ceiling (T-Grid)
+    unit: sqm
+    target: room
+    applies_when:
+      ceiling_finish_code: "CL-02"
+    calculator: is1200.ceiling_with_thresholds
+    deduct_openings_over_sqm: 0.40
+
+  # -------------------------------------------------------------
+  # Trade 4: Drywall & Glass Partitions (IS 1200 Part 4)
+  # -------------------------------------------------------------
+  - id: QS-PT-001
+    item_code: PT-01
+    category: partitions
+    description: 100mm thk Double Skin Gypsum Partition w/ 50mm 48kg/m3 Rockwool
+    unit: sqm
+    target: wall
+    match_policy: exclusive
+    applies_when:
+      wall_type: "partition"
+      partition_type: "gypsum"
+    calculator: wall.partition_area
+    deduct_openings: true
+    formula_template: "Centreline Length * Height minus Door/Glazing Openings"
+
+  - id: QS-PT-002
+    item_code: PT-02
+    category: partitions
+    description: 12mm Toughened Clear Glass Partition with Top/Bottom Aluminum Channel
+    unit: sqm
+    target: wall
+    match_policy: exclusive
+    applies_when:
+      wall_type: "partition"
+      partition_type: "glass"
+    calculator: wall.partition_area
+    deduct_openings: true
+
+  # -------------------------------------------------------------
+  # Trade 5: Doors & Openings (IS 1200 Part 8 & 14)
+  # -------------------------------------------------------------
+  - id: QS-DR-001
+    item_code: DR-01
+    category: doors
+    description: Single Leaf Solid Core Flush Door (35mm thk) with Teakwood Frame
+    unit: nos
+    target: opening
+    match_policy: exclusive
+    applies_when:
+      opening_type: "door"
+      door_type: "single_leaf"
+    calculator: generic.count
+
+  - id: QS-DR-002
+    item_code: DR-02
+    category: doors
+    description: Double Leaf Solid Core Flush Door (45mm thk) w/ Panic Hardware
+    unit: nos
+    target: opening
+    match_policy: exclusive
+    applies_when:
+      opening_type: "door"
+      door_type: "double_leaf"
+    calculator: generic.count
+
+  - id: QS-DR-003
+    item_code: DR-03
+    category: doors
+    description: 12mm Frameless Glass Door with Patch Fittings & Floor Spring
+    unit: nos
+    target: opening
+    match_policy: exclusive
+    applies_when:
+      opening_type: "door"
+      door_type: "glass"
+    calculator: generic.count
+
+material_mapping:
+  room_types:
+    "RECEPTION": "FL-01"
+    "LOBBY": "FL-01"
+    "CAFETERIA": "FL-01"
+    "PANTRY": "FL-01"
+    "BOARDROOM": "FL-01"
+    "CONFERENCE": "FL-01"
+    "BAY": "FL-01"
+    "SERVER": "FL-01"
+    "UPS": "FL-01"
+  finish_codes:
+    "F-01": "FL-01"
+    "VT-01": "FL-01"
+    "CP-01": "FL-02"
+    "VN-01": "FL-03"
+
+ceiling_mapping:
+  room_types:
+    "RECEPTION": "CL-01"
+    "LOBBY": "CL-01"
+    "CAFETERIA": "CL-01"
+    "PANTRY": "CL-01"
+    "BOARDROOM": "CL-01"
+    "CONFERENCE": "CL-01"
+    "BAY": "CL-01"
+    "SERVER": "CL-01"
+    "UPS": "CL-01"

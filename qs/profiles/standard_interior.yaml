@@ -1,0 +1,163 @@
+# QS Quantification Engine — Standard Interior Takeoff Profile
+# Based on Blueprint Section 23 (QS Rule Engine) & Section 24 (Measurement Rules)
+# Follows IS 1200 / POMI measurement conventions
+
+profile_id: standard_interior_v1
+name: Standard Interior Measurement Profile
+version: 1.0.0
+standard: IS 1200 / POMI
+
+rules:
+  - id: QS-FL-001
+    item_code: FL-01
+    category: flooring
+    description: Vitrified Tile / Italian Marble Flooring
+    unit: sqm
+    target: room
+    match_policy: exclusive
+    applies_when:
+      finish_code: "FL-01"
+    calculator: is1200.flooring_with_door_rebates
+    formula_template: "{net_area_sqm:.3f} sqm"
+    description_template: "Flooring in {room_name}"
+
+  - id: QS-FL-002
+    item_code: FL-02
+    category: flooring
+    description: 500x500mm Modular Nylon Carpet Tiles with Cushion Backing
+    unit: sqm
+    target: room
+    match_policy: exclusive
+    applies_when:
+      finish_code: "FL-02"
+    calculator: is1200.flooring_with_door_rebates
+    formula_template: "{net_area_sqm:.3f} sqm"
+    description_template: "Carpet tile flooring in {room_name}"
+
+  - id: QS-FL-004
+    item_code: FL-04
+    category: flooring
+    description: Anti-Skid Vitrified Tile Flooring (Wet Areas / Pantry)
+    unit: sqm
+    target: room
+    match_policy: exclusive
+    applies_when:
+      finish_code: "FL-04"
+    calculator: is1200.flooring_with_door_rebates
+    formula_template: "{net_area_sqm:.3f} sqm"
+    description_template: "Anti-skid flooring in {room_name}"
+
+  - id: QS-FL-005
+    item_code: FL-05
+    category: flooring
+    description: Heavy Duty Anti-Static Raised Access Flooring (Server / UPS Room)
+    unit: sqm
+    target: room
+    match_policy: exclusive
+    applies_when:
+      finish_code: "FL-05"
+    calculator: is1200.flooring_with_door_rebates
+    formula_template: "{net_area_sqm:.3f} sqm"
+    description_template: "Anti-static flooring in {room_name}"
+
+
+  - id: QS-SK-001
+    item_code: SK-01
+    category: skirting
+    description: Perimeter Skirting (100mm ht)
+    unit: m
+    target: room
+    match_policy: exclusive
+    applies_when:
+      skirting_finish_code: "SK-01"
+    calculator: is1200.skirting_with_deductions
+    deduct_openings: true
+    formula_template: "({perimeter_m:.3f}m perimeter - {door_deduction_m:.3f}m doors) = {net_perimeter_m:.3f} m"
+    description_template: "Skirting in {room_name}"
+
+  - id: QS-CL-001
+    item_code: CL-01
+    category: ceiling
+    description: Gypsum False Ceiling
+    unit: sqm
+    target: room
+    match_policy: exclusive
+    applies_when:
+      ceiling_finish_code: "CL-01"
+    calculator: is1200.ceiling_with_thresholds
+    formula_template: "{gross_area_sqm:.3f} sqm"
+    description_template: "False ceiling in {room_name}"
+
+  - id: QS-DR-001
+    item_code: DR-01
+    category: openings
+    description: Single Leaf Flush Door
+    unit: nos
+    target: opening
+    match_policy: exclusive
+    applies_when:
+      opening_type: "door"
+      door_type: "single_leaf"
+    calculator: generic.count
+    description_template: "Single Leaf Flush Doors"
+
+  - id: QS-DR-002
+    item_code: DR-02
+    category: openings
+    description: Double Leaf Flush Door
+    unit: nos
+    target: opening
+    match_policy: exclusive
+    applies_when:
+      opening_type: "door"
+      door_type: "double_leaf"
+    calculator: generic.count
+    description_template: "Double Leaf Flush Doors"
+
+  - id: QS-PT-001
+    item_code: PT-01
+    category: partitions
+    description: Gypsum Board Partition
+    unit: sqm
+    target: wall
+    match_policy: exclusive
+    applies_when:
+      wall_type: "partition"
+      partition_type: "gypsum"
+    calculator: wall.partition_area
+    deduct_openings: true
+    formula_template: "Wall Length * Height - Openings"
+
+material_mapping:
+  room_types:
+    "CONFERENCE": "FL-01"
+    "CABIN": "FL-01"
+    "EXECUTIVE": "FL-01"
+    "OFFICE": "FL-01"
+    "MEETING": "FL-01"
+    "LOBBY": "FL-01"
+    "RECEPTION": "FL-01"
+    "CAFETERIA": "FL-01"
+    "PANTRY": "FL-01"
+    "BOARDROOM": "FL-01"
+    "SERVER": "FL-01"
+    "WAITING": "FL-01"
+  finish_codes:
+    "F-01": "FL-01"
+    "VT-01": "FL-01"
+    "CP-01": "FL-01"
+
+ceiling_mapping:
+  room_types:
+    "CONFERENCE": "CL-01"
+    "CABIN": "CL-01"
+    "EXECUTIVE": "CL-01"
+    "OFFICE": "CL-01"
+    "MEETING": "CL-01"
+    "LOBBY": "CL-01"
+    "RECEPTION": "CL-01"
+    "CAFETERIA": "CL-01"
+    "PANTRY": "CL-01"
+    "BOARDROOM": "CL-01"
+    "SERVER": "CL-01"
+    "WAITING": "CL-01"

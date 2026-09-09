@@ -1,0 +1,500 @@
+drawings:
+  PROJECT_11_RESIDENTIAL_2BHK.dxf:
+    typology: Residential 2BHK
+    format: DXF
+    verified:
+      rooms:
+        LIVING ROOM:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        MASTER BEDROOM:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+        KIDS BEDROOM:
+          area_sqm: 10.5
+          perimeter_m: 13.0
+        KITCHEN:
+          area_sqm: 7.5
+          perimeter_m: 11.0
+        TOILET:
+          area_sqm: 3.0
+          perimeter_m: 7.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 44.5
+        FL-02: 10.5
+  PROJECT_12_HEALTHCARE_CLINIC.dxf:
+    typology: Healthcare Clinic / OPD
+    format: DXF
+    verified:
+      rooms:
+        WAITING LOUNGE:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        CONSULTATION 1:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+        CONSULTATION 2:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+        PROCEDURE OT:
+          area_sqm: 15.75
+          perimeter_m: 16.0
+        PHARMACY:
+          area_sqm: 9.0
+          perimeter_m: 12.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 58.0
+        FL-02: 24.75
+  PROJECT_13_CORPORATE_TECH_SUITE.dxf:
+    typology: Corporate Tech Suite
+    format: DXF
+    verified:
+      rooms:
+        OPEN WORKSPACE:
+          area_sqm: 48.0
+          perimeter_m: 28.0
+        BOARDROOM:
+          area_sqm: 24.0
+          perimeter_m: 20.0
+        SERVER ROOM:
+          area_sqm: 9.0
+          perimeter_m: 12.0
+        EXECUTIVE CABIN:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+      doors:
+        total: 4
+      flooring:
+        FL-01: 64.0
+        FL-02: 33.0
+  PROJECT_14_RETAIL_FLAGSHIP_STORE.dxf:
+    typology: Retail Flagship Store
+    format: DXF
+    verified:
+      rooms:
+        SHOWROOM FLOOR:
+          area_sqm: 70.0
+          perimeter_m: 34.0
+        TRIAL ROOM 1:
+          area_sqm: 3.6
+          perimeter_m: 7.6
+        TRIAL ROOM 2:
+          area_sqm: 3.6
+          perimeter_m: 7.6
+        BILLING COUNTER:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+        STOCKROOM:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 77.2
+        FL-02: 32.0
+  PROJECT_15_INDUSTRIAL_WAREHOUSE_OFFICE.dxf:
+    typology: Industrial Warehouse Office
+    format: DXF
+    verified:
+      rooms:
+        DISPATCH OFFICE:
+          area_sqm: 35.0
+          perimeter_m: 24.0
+        SUPERVISOR CABIN:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+        LOCKER ROOM:
+          area_sqm: 17.5
+          perimeter_m: 17.0
+        TESTING LAB:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 4
+      flooring:
+        FL-01: 51.0
+        FL-02: 37.5
+  PROJECT_16_HOTEL_LUXURY_SUITE.dxf:
+    typology: Hospitality Hotel Suite
+    format: DXF
+    verified:
+      rooms:
+        FOYER:
+          area_sqm: 7.5
+          perimeter_m: 11.0
+        LIVING LOUNGE:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        MASTER SUITE:
+          area_sqm: 24.75
+          perimeter_m: 20.0
+        ENSUITE BATH:
+          area_sqm: 10.5
+          perimeter_m: 13.0
+        WALK IN CLOSET:
+          area_sqm: 6.0
+          perimeter_m: 10.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 62.25
+        FL-02: 16.5
+  PROJECT_17_RESTAURANT_CAFE.dxf:
+    typology: Restaurant & Cafe
+    format: DXF
+    verified:
+      rooms:
+        DINING HALL:
+          area_sqm: 96.0
+          perimeter_m: 40.0
+        COMMERCIAL KITCHEN:
+          area_sqm: 35.0
+          perimeter_m: 24.0
+        COCKTAIL BAR:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        COLD STORAGE:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+        RESTROOM:
+          area_sqm: 7.5
+          perimeter_m: 11.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 116.0
+        FL-02: 54.5
+  PROJECT_18_UNIVERSITY_LAB_COMPLEX.dxf:
+    typology: Educational & Research Lab
+    format: DXF
+    verified:
+      rooms:
+        RESEARCH WET LAB:
+          area_sqm: 60.0
+          perimeter_m: 32.0
+        INSTRUMENT PREP:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        FACULTY CABIN:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+        GRADUATE STUDY:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        CHEMICAL STORE:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 46.0
+        FL-02: 92.0
+  PROJECT_19_BANK_BRANCH.dxf:
+    typology: Banking & Financial Branch
+    format: DXF
+    verified:
+      rooms:
+        BANKING HALL:
+          area_sqm: 63.0
+          perimeter_m: 32.0
+        STRONGROOM VAULT:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        BRANCH MANAGER:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+        TELLER OPERATIONS:
+          area_sqm: 21.0
+          perimeter_m: 19.0
+        ATM VESTIBULE:
+          area_sqm: 9.0
+          perimeter_m: 12.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 88.0
+        FL-02: 41.0
+  PROJECT_20_GYM_FITNESS_CENTER.dxf:
+    typology: Sports & Fitness Facility
+    format: DXF
+    verified:
+      rooms:
+        CARDIO STRENGTH ARENA:
+          area_sqm: 84.0
+          perimeter_m: 38.0
+        YOGA STUDIO:
+          area_sqm: 35.0
+          perimeter_m: 24.0
+        LOCKER ROOM:
+          area_sqm: 24.0
+          perimeter_m: 20.0
+        SHOWER SUITE:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+        TRAINER OFFICE:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 131.0
+        FL-02: 38.0
+  PROJECT_21_LUXURY_PENTHOUSE_RESIDENCE.dxf:
+    typology: Luxury Residential Penthouse
+    format: DXF
+    verified:
+      rooms:
+        FORMAL LIVING:
+          area_sqm: 35.0
+          perimeter_m: 24.0
+        DINING LOUNGE:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        MASTER BEDROOM:
+          area_sqm: 27.0
+          perimeter_m: 21.0
+        WALK IN CLOSET:
+          area_sqm: 10.5
+          perimeter_m: 13.0
+        POWDER TOILET:
+          area_sqm: 5.0
+          perimeter_m: 9.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 55.0
+        FL-02: 37.5
+        FL-03: 5.0
+  PROJECT_22_COWORKING_INNOVATION_HUB.dxf:
+    typology: Coworking Innovation Hub
+    format: DXF
+    verified:
+      rooms:
+        OPEN WORKSPACE:
+          area_sqm: 80.0
+          perimeter_m: 36.0
+        EXECUTIVE CABIN 1:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+        EXECUTIVE CABIN 2:
+          area_sqm: 16.0
+          perimeter_m: 16.0
+        CONFERENCE BOARDROOM:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        PANTRY CAFE:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 20.0
+        FL-02: 142.0
+  PROJECT_23_DERMATOLOGY_WELLNESS_CLINIC.dxf:
+    typology: Dermatology & Wellness Clinic
+    format: DXF
+    verified:
+      rooms:
+        RECEPTION LOBBY:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        CONSULTATION ROOM:
+          area_sqm: 18.0
+          perimeter_m: 17.0
+        LASER PROCEDURE:
+          area_sqm: 15.75
+          perimeter_m: 16.0
+        RECOVERY SUITE:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+        STERILIZATION:
+          area_sqm: 9.0
+          perimeter_m: 12.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 30.0
+        FL-03: 56.75
+  PROJECT_24_BOUTIQUE_LUXURY_HOTEL_LOBBY.dxf:
+    typology: Boutique Hotel Lobby
+    format: DXF
+    verified:
+      rooms:
+        GRAND FOYER:
+          area_sqm: 48.0
+          perimeter_m: 28.0
+        CONCIERGE LOUNGE:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        ALL DAY DINING:
+          area_sqm: 60.0
+          perimeter_m: 32.0
+        PRIVATE MEETING:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        RESTROOM:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 138.0
+        FL-02: 20.0
+        FL-03: 12.0
+  PROJECT_25_HIGH_STREET_FASHION_BOUTIQUE.dxf:
+    typology: High-Street Fashion Boutique
+    format: DXF
+    verified:
+      rooms:
+        MAIN SHOWROOM:
+          area_sqm: 84.0
+          perimeter_m: 38.0
+        VIP FITTING 1:
+          area_sqm: 5.0
+          perimeter_m: 9.0
+        VIP FITTING 2:
+          area_sqm: 5.0
+          perimeter_m: 9.0
+        TAILORING WORKSHOP:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+        STOCK INVENTORY:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 98.0
+        FL-02: 10.0
+        FL-03: 20.0
+  PROJECT_26_FINE_DINING_LOUNGE_BAR.dxf:
+    typology: Fine Dining Lounge & Bar
+    format: DXF
+    verified:
+      rooms:
+        MAIN DINING:
+          area_sqm: 70.0
+          perimeter_m: 34.0
+        PRIVATE DINING PDR:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        ISLAND BAR:
+          area_sqm: 24.0
+          perimeter_m: 20.0
+        CHEF KITCHEN:
+          area_sqm: 40.0
+          perimeter_m: 26.0
+        SERVICE CORRIDOR:
+          area_sqm: 12.0
+          perimeter_m: 16.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 106.0
+        FL-02: 20.0
+        FL-03: 40.0
+  PROJECT_27_MULTISPECIALTY_DENTAL_SURGERY.dxf:
+    typology: Multispecialty Dental Surgery
+    format: DXF
+    verified:
+      rooms:
+        OPERATORY 1:
+          area_sqm: 18.0
+          perimeter_m: 17.0
+        OPERATORY 2:
+          area_sqm: 18.0
+          perimeter_m: 17.0
+        XRAY SCANNING:
+          area_sqm: 10.5
+          perimeter_m: 13.0
+        STERILIZATION LAB:
+          area_sqm: 10.5
+          perimeter_m: 13.0
+        DOCTORS OFFICE:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 14.0
+        FL-03: 57.0
+  PROJECT_28_LAW_CHAMBERS_PARTNERS_OFFICE.dxf:
+    typology: Law Chambers & Partners Office
+    format: DXF
+    verified:
+      rooms:
+        SENIOR PARTNER:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        ASSOCIATE POOL:
+          area_sqm: 35.0
+          perimeter_m: 24.0
+        LAW LIBRARY:
+          area_sqm: 24.0
+          perimeter_m: 20.0
+        MEDIATION ROOM:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        CLIENT WAITING:
+          area_sqm: 14.0
+          perimeter_m: 15.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 38.0
+        FL-02: 85.0
+  PROJECT_29_MODULAR_KITCHEN_WARDROBE_STUDIO.dxf:
+    typology: Modular Kitchen & Wardrobe Studio
+    format: DXF
+    verified:
+      rooms:
+        ISLAND KITCHEN:
+          area_sqm: 30.0
+          perimeter_m: 22.0
+        WARDROBE DISPLAY:
+          area_sqm: 24.0
+          perimeter_m: 20.0
+        DESIGN CONSULTATION:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        MATERIAL GALLERY:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        SAMPLE STORAGE:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 50.0
+        FL-02: 44.0
+        FL-03: 12.0
+  PROJECT_30_RECORDING_PODCAST_STUDIO.dxf:
+    typology: Recording & Podcast Studio
+    format: DXF
+    verified:
+      rooms:
+        LIVE SOUND STAGE:
+          area_sqm: 48.0
+          perimeter_m: 28.0
+        CONTROL BOOTH:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+        SOUND LOCK AIRLOCK:
+          area_sqm: 6.0
+          perimeter_m: 10.0
+        PODCAST BOOTH:
+          area_sqm: 12.0
+          perimeter_m: 14.0
+        CLIENT SCREENING:
+          area_sqm: 20.0
+          perimeter_m: 18.0
+      doors:
+        total: 5
+      flooring:
+        FL-01: 20.0
+        FL-02: 86.0

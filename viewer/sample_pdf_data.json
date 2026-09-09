@@ -1,0 +1,265 @@
+{
+  "drawing": {
+    "filename": "sample_pdf.pdf",
+    "drawing_number": "A-101",
+    "revision": "02",
+    "units": "mm",
+    "scale_to_mm": 35.27777777777777
+  },
+  "layers": [
+    "PDF_VECTOR",
+    "ROOM_OVERLAYS"
+  ],
+  "segments": [
+    {
+      "x1": 3527.78,
+      "y1": 24880.56,
+      "x2": 9527.78,
+      "y2": 24880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00001"
+    },
+    {
+      "x1": 9527.78,
+      "y1": 24880.56,
+      "x2": 9527.78,
+      "y2": 20880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00002"
+    },
+    {
+      "x1": 9527.78,
+      "y1": 20880.56,
+      "x2": 3527.78,
+      "y2": 20880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00003"
+    },
+    {
+      "x1": 3527.78,
+      "y1": 20880.56,
+      "x2": 3527.78,
+      "y2": 24880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00004"
+    },
+    {
+      "x1": 9527.78,
+      "y1": 24880.56,
+      "x2": 13527.78,
+      "y2": 24880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00005"
+    },
+    {
+      "x1": 13527.78,
+      "y1": 24880.56,
+      "x2": 13527.78,
+      "y2": 20880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00006"
+    },
+    {
+      "x1": 13527.78,
+      "y1": 20880.56,
+      "x2": 9527.78,
+      "y2": 20880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00007"
+    },
+    {
+      "x1": 9527.78,
+      "y1": 20880.56,
+      "x2": 9527.78,
+      "y2": 24880.56,
+      "layer": "PDF_VECTOR",
+      "handle": "R-00008"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "R-001",
+      "name": "CONFERENCE",
+      "net_area_sqm": 24.0,
+      "gross_area_sqm": 24.0,
+      "perimeter_m": 20.0,
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "polygon": [
+        [
+          3527.78,
+          24880.56
+        ],
+        [
+          9527.78,
+          24880.56
+        ],
+        [
+          9527.78,
+          20880.56
+        ],
+        [
+          3527.78,
+          20880.56
+        ]
+      ]
+    },
+    {
+      "id": "R-002",
+      "name": "EXECUTIVE",
+      "net_area_sqm": 16.0,
+      "gross_area_sqm": 16.0,
+      "perimeter_m": 16.0,
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "polygon": [
+        [
+          9527.78,
+          20880.56
+        ],
+        [
+          9527.78,
+          24880.56
+        ],
+        [
+          13527.78,
+          24880.56
+        ],
+        [
+          13527.78,
+          20880.56
+        ]
+      ]
+    }
+  ],
+  "takeoff": [
+    {
+      "id": "TO-0001",
+      "item_code": "FL-01",
+      "description": "Vitrified Tile Flooring in CONFERENCE",
+      "location": "CONFERENCE",
+      "quantity": 24.0,
+      "raw_quantity": 23.999988666667996,
+      "unit": "sqm",
+      "formula": "Room polygon area = 24.000 sqm",
+      "source_entities": [
+        "R-001"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-FL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:53:59.202600"
+    },
+    {
+      "id": "TO-0002",
+      "item_code": "SK-01",
+      "description": "Perimeter Skirting (100mm ht) in CONFERENCE",
+      "location": "CONFERENCE",
+      "quantity": 20.0,
+      "raw_quantity": 19.999995277777778,
+      "unit": "m",
+      "formula": "Perimeter (20.000m) - Door deduction (0.000m) = 20.000 m",
+      "source_entities": [
+        "R-001"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-SK-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:53:59.202600"
+    },
+    {
+      "id": "TO-0003",
+      "item_code": "CL-01",
+      "description": "Gypsum False Ceiling in CONFERENCE",
+      "location": "CONFERENCE",
+      "quantity": 24.0,
+      "raw_quantity": 23.999988666667996,
+      "unit": "sqm",
+      "formula": "Ceiling area = 24.000 sqm",
+      "source_entities": [
+        "R-001"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-CL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:53:59.202600"
+    },
+    {
+      "id": "TO-0004",
+      "item_code": "FL-01",
+      "description": "Vitrified Tile Flooring in EXECUTIVE",
+      "location": "EXECUTIVE",
+      "quantity": 16.0,
+      "raw_quantity": 15.999992444445342,
+      "unit": "sqm",
+      "formula": "Room polygon area = 16.000 sqm",
+      "source_entities": [
+        "R-002"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-FL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:53:59.202600"
+    },
+    {
+      "id": "TO-0005",
+      "item_code": "SK-01",
+      "description": "Perimeter Skirting (100mm ht) in EXECUTIVE",
+      "location": "EXECUTIVE",
+      "quantity": 16.0,
+      "raw_quantity": 15.999996222222224,
+      "unit": "m",
+      "formula": "Perimeter (16.000m) - Door deduction (0.000m) = 16.000 m",
+      "source_entities": [
+        "R-002"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-SK-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:53:59.202600"
+    },
+    {
+      "id": "TO-0006",
+      "item_code": "CL-01",
+      "description": "Gypsum False Ceiling in EXECUTIVE",
+      "location": "EXECUTIVE",
+      "quantity": 16.0,
+      "raw_quantity": 15.999992444445342,
+      "unit": "sqm",
+      "formula": "Ceiling area = 16.000 sqm",
+      "source_entities": [
+        "R-002"
+      ],
+      "confidence": 0.99,
+      "status": "auto_measured",
+      "rule_id": "QS-CL-001",
+      "assumptions": [],
+      "created_at": "2026-09-07T06:53:59.202600"
+    }
+  ],
+  "totals": {
+    "FL-01": {
+      "description": "Vitrified Tile Flooring in CONFERENCE",
+      "total_quantity": 40.0,
+      "unit": "sqm",
+      "count": 2
+    },
+    "SK-01": {
+      "description": "Perimeter Skirting (100mm ht) in CONFERENCE",
+      "total_quantity": 36.0,
+      "unit": "m",
+      "count": 2
+    },
+    "CL-01": {
+      "description": "Gypsum False Ceiling in CONFERENCE",
+      "total_quantity": 40.0,
+      "unit": "sqm",
+      "count": 2
+    }
+  }
+}

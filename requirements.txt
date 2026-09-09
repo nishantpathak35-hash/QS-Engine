@@ -1,0 +1,28 @@
+# QS Quantification Engine — Core Production Dependencies
+# Pinned for reproducibility and 100% local operation (₹0 API Cost)
+
+# CAD & Vector Geometry
+ezdxf>=1.3.0,<2.0.0
+shapely>=2.0.0,<3.0.0
+numpy>=1.24.0,<3.0.0
+
+# PDF Vector Extraction & Testing
+pdfplumber>=0.10.0,<1.0.0
+reportlab>=4.0.0,<5.0.0
+
+# API & Schemas
+fastapi>=0.110.0,<1.0.0
+uvicorn>=0.28.0,<1.0.0
+python-multipart>=0.0.9,<1.0.0
+pydantic>=2.5.0,<3.0.0
+pyyaml>=6.0.0,<7.0.0
+
+# Exports & Data Interchange
+openpyxl>=3.1.0,<4.0.0
+
+# Computer Vision & Raster Preprocessing (Headless for Servers)
+opencv-python-headless>=4.8.0,<5.0.0
+
+# Testing & Quality
+pytest>=8.0.0,<10.0.0
+httpx>=0.27.0,<1.0.0
