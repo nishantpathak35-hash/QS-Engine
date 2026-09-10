@@ -11,13 +11,27 @@ let dragDist = 0;
 let selectedRoom = null;
 let hoveredRoom = null;
 let activeLayers = new Set();
-let currentTab = 'summary'; // 'summary' | 'pricing' | 'rooms'
+let currentTab = 'summary'; // 'summary' | 'pricing' | 'rooms' | 'custom'
 let currentTradeFilter = 'all'; // 'all' | 'flooring' | 'partitions' | 'doors' | 'ceilings' | 'fixtures'
 let activeFinishFilter = null; // e.g. 'FL-01' or null
 let searchQuery = '';
 let currentDrawingId = null;
 let currentFileName = "";
 let sampleProjectsList = [];
+
+// ── PlanSwift-Inspired Interactive Workstation State ──────────────────────────
+let currentTool = 'select'; // 'select' | 'area' | 'linear' | 'count' | 'dimension'
+let snapEnabled = true;
+let showCrosshair = false;
+let showMinimap = true;
+let activeMeasurePoints = [];
+let currentMouseWorld = { x: 0, y: 0 };
+let currentMouseScreen = { x: 0, y: 0 };
+let snappedVertex = null;
+let customTakeoffs = []; // Array of custom takeoff assemblies { id, type, name, color, fill, points/polygon, areaSqft, areaSqm, perimeterRft, lengthRft, lengthM, count, visible }
+let minimapCanvas = null;
+let minimapCtx = null;
+let scaleCalibrationFactor = 1.0;
 
 // Commercial Fitout Unit Standards (All Areas in SQFT, Lengths in RFT)
 const SQM_TO_SQFT = 10.7639104;
@@ -131,6 +145,10 @@ async function init() {
 
   setupTabControls();
   setupTradeFilterControls();
+  setupPlanSwiftRibbon();
+  setupPlanSwiftMinimap();
+  setupPlanSwiftScaleModal();
+  setupKeyboardShortcuts();
   setupSearchAndQuickFilters();
   setupInteractions();
   await loadSampleProjectsCatalog();
@@ -392,18 +410,21 @@ function setupTabControls() {
   const btnSummary = document.getElementById('tabSummary');
   const btnPricing = document.getElementById('tabPricing');
   const btnRooms = document.getElementById('tabRooms');
+  const btnCustom = document.getElementById('tabCustom');
 
   const setTab = (tab) => {
     currentTab = tab;
     if (btnSummary) btnSummary.className = tab === 'summary' ? 'tab-btn active' : 'tab-btn';
     if (btnPricing) btnPricing.className = tab === 'pricing' ? 'tab-btn active' : 'tab-btn';
     if (btnRooms) btnRooms.className = tab === 'rooms' ? 'tab-btn active' : 'tab-btn';
+    if (btnCustom) btnCustom.className = tab === 'custom' ? 'tab-btn active' : 'tab-btn';
     setupUI();
   };
 
   if (btnSummary) btnSummary.onclick = () => setTab('summary');
   if (btnPricing) btnPricing.onclick = () => setTab('pricing');
   if (btnRooms) btnRooms.onclick = () => setTab('rooms');
+  if (btnCustom) btnCustom.onclick = () => setTab('custom');
 }
 
 function updateLayersGridUI() {
@@ -618,6 +639,33 @@ function setupUI() {
       `;
     }
 
+    // Include PlanSwift Custom Takeoff Assemblies in BOQ Order
+    if (customTakeoffs.length > 0) {
+      tableRows += `
+        <tr style="background: var(--surface-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+          <td colspan="6" style="font-weight: 700; color: var(--brand); font-size: 0.72rem; text-transform: uppercase; padding: 6px 8px; letter-spacing: 0.3px;">
+            📐 Custom PlanSwift Takeoffs (${customTakeoffs.length})
+          </td>
+        </tr>
+      `;
+      customTakeoffs.forEach(to => {
+        let net = to.areaSqft || to.lengthRft || to.count || 0;
+        let unit = to.type === 'area' ? 'sqft' : (to.type === 'linear' ? 'Rft' : 'nos');
+        let gross = to.type === 'area' ? Math.round(net * 1.05) : (to.type === 'linear' ? Math.round(net * 1.07) : net);
+        let waste = to.type === 'count' ? '0%' : (to.type === 'area' ? '5%' : '7%');
+        tableRows += `
+          <tr>
+            <td><strong style="color: ${to.color}; font-family: monospace; font-size: 0.74rem;">CUSTOM</strong></td>
+            <td style="font-size: 0.76rem; color: var(--t1);">${to.name}</td>
+            <td style="text-align: right; color: var(--t3); font-weight: 500;">${net.toLocaleString('en-IN')}</td>
+            <td style="text-align: center; color: var(--brand); font-weight: 600; font-size: 0.74rem;">${waste}</td>
+            <td style="text-align: right; font-weight: 700; color: var(--green);">${gross.toLocaleString('en-IN')}</td>
+            <td style="text-align: center; color: var(--t3); font-weight: 600; font-size: 0.72rem;">${unit}</td>
+          </tr>
+        `;
+      });
+    }
+
     const totalFloorAreaSqft = Math.round(totalFloorArea * SQM_TO_SQFT);
     summaryCard.innerHTML = `
       <div class="boq-metrics">
@@ -769,8 +817,12 @@ function setupUI() {
       };
     });
 
+  } else if (currentTab === 'custom') {
+    // 3. PlanSwift Custom Takeoff Assemblies View
+    renderCustomAssembliesUI(list);
+
   } else {
-    // 3. Room Schedule View
+    // 4. Room Schedule View
     drawingData.rooms.forEach(room => {
       const isSelected = selectedRoom && selectedRoom.id === room.id;
       const isNamed = room.name && !room.name.includes("Unlabeled") && !room.name.startsWith("Room_");
@@ -884,13 +936,43 @@ function selectRoom(room) {
 
 function setupInteractions() {
   canvas.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    startX = e.clientX - panX;
-    startY = e.clientY - panY;
-    dragDist = 0;
+    if (e.button !== 0) return;
+    if (currentTool === 'select') {
+      isDragging = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+      dragDist = 0;
+    } else {
+      handleTakeoffClick(e);
+    }
+  });
+
+  canvas.addEventListener('dblclick', (e) => {
+    if (currentTool === 'area' && activeMeasurePoints.length >= 3) {
+      finishAreaTakeoff();
+    } else if (currentTool === 'linear' && activeMeasurePoints.length >= 2) {
+      finishLinearTakeoff();
+    }
   });
 
   window.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const screenX = e.clientX - rect.left;
+    const screenY = e.clientY - rect.top;
+
+    currentMouseScreen = { x: screenX, y: screenY };
+    let worldPos = screenToWorld(screenX, screenY);
+
+    if (snapEnabled && drawingData && drawingData.segments && currentTool !== 'select') {
+      snappedVertex = findSnapVertex(screenX, screenY);
+      if (snappedVertex) {
+        worldPos = { x: snappedVertex.x, y: snappedVertex.y };
+      }
+    } else {
+      snappedVertex = null;
+    }
+    currentMouseWorld = worldPos;
+
     if (isDragging) {
       const dx = e.clientX - panX - startX;
       const dy = e.clientY - panY - startY;
@@ -898,12 +980,7 @@ function setupInteractions() {
       panX = e.clientX - startX;
       panY = e.clientY - startY;
       render();
-    } else if (drawingData && drawingData.rooms && canvas) {
-      const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-      const worldPos = screenToWorld(mouseX, mouseY);
-
+    } else if (currentTool === 'select' && drawingData && drawingData.rooms && canvas) {
       let found = null;
       for (const r of drawingData.rooms) {
         if (pointInPolygon(worldPos, r.polygon)) {
@@ -914,14 +991,17 @@ function setupInteractions() {
 
       if (found !== hoveredRoom) {
         hoveredRoom = found;
-        canvas.style.cursor = hoveredRoom ? 'pointer' : (isDragging ? 'grabbing' : 'grab');
+        canvas.style.cursor = hoveredRoom ? 'pointer' : 'grab';
         render();
       }
+    } else if (currentTool !== 'select') {
+      updatePlanSwiftHUD(e.clientX, e.clientY);
+      render();
     }
   });
 
   window.addEventListener('mouseup', (e) => {
-    if (isDragging && dragDist < 6 && drawingData && drawingData.rooms) {
+    if (currentTool === 'select' && isDragging && dragDist < 6 && drawingData && drawingData.rooms) {
       const rect = canvas.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
@@ -1553,6 +1633,12 @@ function render() {
       ctx.restore();
     });
   }
+
+  // 4. PlanSwift Interactive Overlays: Custom Takeoffs, Active Measurement Rubberband, CAD Crosshair, Snap Marker
+  drawPlanSwiftOverlays();
+
+  // 5. PlanSwift Overview Minimap
+  updateMinimap();
 }
 
 function drawGrid() {
@@ -1565,4 +1651,871 @@ function drawGrid() {
       ctx.fill();
     }
   }
+}
+
+// ── PLANSWIFT WORKSTATION CORE IMPLEMENTATION ────────────────────────────────
+
+function setupPlanSwiftRibbon() {
+  document.querySelectorAll('.planswift-ribbon .ribbon-btn[data-tool]').forEach(btn => {
+    btn.onclick = () => {
+      const tool = btn.getAttribute('data-tool');
+      setTool(tool);
+    };
+  });
+
+  const btnSnap = document.getElementById('btnToggleSnap');
+  if (btnSnap) {
+    btnSnap.onclick = () => {
+      snapEnabled = !snapEnabled;
+      btnSnap.classList.toggle('active', snapEnabled);
+      render();
+    };
+  }
+
+  const btnCrosshair = document.getElementById('btnToggleCrosshair');
+  if (btnCrosshair) {
+    btnCrosshair.onclick = () => {
+      showCrosshair = !showCrosshair;
+      btnCrosshair.classList.toggle('active', showCrosshair);
+      render();
+    };
+  }
+
+  const btnMinimap = document.getElementById('btnToggleMinimap');
+  if (btnMinimap) {
+    btnMinimap.onclick = () => {
+      showMinimap = !showMinimap;
+      btnMinimap.classList.toggle('active', showMinimap);
+      const mContainer = document.getElementById('minimapContainer');
+      if (mContainer) mContainer.style.display = showMinimap ? 'flex' : 'none';
+      render();
+    };
+  }
+}
+
+function setupPlanSwiftMinimap() {
+  minimapCanvas = document.getElementById('minimapCanvas');
+  if (!minimapCanvas) return;
+  minimapCtx = minimapCanvas.getContext('2d');
+
+  const container = document.getElementById('minimapContainer');
+  const btnClose = document.getElementById('btnCloseMinimap');
+  if (btnClose && container) {
+    btnClose.onclick = () => {
+      showMinimap = false;
+      container.style.display = 'none';
+      const btnToggle = document.getElementById('btnToggleMinimap');
+      if (btnToggle) btnToggle.classList.remove('active');
+    };
+  }
+
+  minimapCanvas.addEventListener('mousedown', (e) => {
+    panFromMinimap(e);
+  });
+}
+
+function setupPlanSwiftScaleModal() {
+  const modal = document.getElementById('scaleCalibrateModal');
+  const form = document.getElementById('scaleCalibrateForm');
+  const btnCancel = document.getElementById('btnCancelCalib');
+  if (!modal || !form) return;
+
+  if (btnCancel) btnCancel.onclick = () => modal.close();
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const realInput = document.getElementById('calibRealDist');
+    const unitSelect = document.getElementById('calibUnit');
+    const rawMeasured = parseFloat(modal.getAttribute('data-measured-mm') || '0');
+
+    const realVal = parseFloat(realInput ? realInput.value : '0');
+    const unit = unitSelect ? unitSelect.value : 'mm';
+
+    if (realVal && realVal > 0 && rawMeasured > 0) {
+      let realMm = realVal;
+      if (unit === 'm') realMm = realVal * 1000;
+      else if (unit === 'ft') realMm = realVal * 304.8;
+      else if (unit === 'in') realMm = realVal * 25.4;
+
+      scaleCalibrationFactor = realMm / rawMeasured;
+      const scaleBadge = document.getElementById('scaleLabelText');
+      if (scaleBadge) {
+        scaleBadge.innerText = `Calibrated (${realVal} ${unit})`;
+      }
+      modal.close();
+      setTool('select');
+      render();
+    }
+  };
+}
+
+function setupKeyboardShortcuts() {
+  window.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+
+    if (e.key === 'Escape') {
+      if (activeMeasurePoints.length > 0) {
+        activeMeasurePoints = [];
+        render();
+      } else {
+        setTool('select');
+      }
+    } else if (e.key === 'Enter') {
+      if (currentTool === 'area' && activeMeasurePoints.length >= 3) {
+        finishAreaTakeoff();
+      } else if (currentTool === 'linear' && activeMeasurePoints.length >= 2) {
+        finishLinearTakeoff();
+      }
+    } else if (e.key.toLowerCase() === 'v') {
+      setTool('select');
+    } else if (e.key.toLowerCase() === 'a') {
+      setTool('area');
+    } else if (e.key.toLowerCase() === 'l') {
+      setTool('linear');
+    } else if (e.key.toLowerCase() === 'c' && !e.ctrlKey) {
+      setTool('count');
+    } else if (e.key.toLowerCase() === 'd') {
+      setTool('dimension');
+    } else if (e.key.toLowerCase() === 's') {
+      snapEnabled = !snapEnabled;
+      const btn = document.getElementById('btnToggleSnap');
+      if (btn) btn.classList.toggle('active', snapEnabled);
+      render();
+    } else if (e.key.toLowerCase() === 'm') {
+      showMinimap = !showMinimap;
+      const container = document.getElementById('minimapContainer');
+      const btn = document.getElementById('btnToggleMinimap');
+      if (container) container.style.display = showMinimap ? 'flex' : 'none';
+      if (btn) btn.classList.toggle('active', showMinimap);
+      render();
+    }
+  });
+}
+
+function setTool(toolName) {
+  currentTool = toolName;
+  activeMeasurePoints = [];
+
+  // Finish any active count group
+  customTakeoffs.forEach(t => { if (t.isActiveCountGroup) delete t.isActiveCountGroup; });
+
+  document.querySelectorAll('.planswift-ribbon .ribbon-btn[data-tool]').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-tool') === toolName);
+  });
+
+  const hud = document.getElementById('planswiftHud');
+  if (hud) {
+    if (toolName === 'select') hud.style.display = 'none';
+    else hud.style.display = 'flex';
+  }
+
+  if (toolName === 'select') {
+    canvas.style.cursor = 'grab';
+  } else if (toolName === 'count') {
+    canvas.style.cursor = 'copy';
+  } else {
+    canvas.style.cursor = 'crosshair';
+  }
+
+  render();
+}
+
+function handleTakeoffClick(e) {
+  if (!drawingData) {
+    alert("Please upload a CAD/PDF drawing or load a benchmark first.");
+    setTool('select');
+    return;
+  }
+  const rect = canvas.getBoundingClientRect();
+  const screenX = e.clientX - rect.left;
+  const screenY = e.clientY - rect.top;
+
+  let clickPt = screenToWorld(screenX, screenY);
+  if (snappedVertex) {
+    clickPt = { x: snappedVertex.x, y: snappedVertex.y };
+  }
+
+  if (currentTool === 'area') {
+    if (activeMeasurePoints.length >= 3) {
+      const p0Screen = worldToScreen(activeMeasurePoints[0].x, activeMeasurePoints[0].y);
+      if (Math.hypot(p0Screen.x - screenX, p0Screen.y - screenY) < 16 || (snappedVertex && snappedVertex.isStart)) {
+        finishAreaTakeoff();
+        return;
+      }
+    }
+    activeMeasurePoints.push(clickPt);
+    render();
+  } else if (currentTool === 'linear') {
+    activeMeasurePoints.push(clickPt);
+    render();
+  } else if (currentTool === 'count') {
+    addCountTakeoffPoint(clickPt);
+    render();
+  } else if (currentTool === 'dimension') {
+    activeMeasurePoints.push(clickPt);
+    if (activeMeasurePoints.length === 2) {
+      const p1 = activeMeasurePoints[0];
+      const p2 = activeMeasurePoints[1];
+      const distMm = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+      openScaleCalibrateModal(distMm);
+      activeMeasurePoints = [];
+    }
+    render();
+  }
+}
+
+function findSnapVertex(screenX, screenY, maxDistancePx = 14) {
+  if (!drawingData || !drawingData.segments) return null;
+  let best = null;
+  let bestDist = maxDistancePx;
+
+  // Check CAD segments endpoints
+  for (const s of drawingData.segments) {
+    const p1 = worldToScreen(s.x1, s.y1);
+    const d1 = Math.hypot(p1.x - screenX, p1.y - screenY);
+    if (d1 < bestDist) {
+      bestDist = d1;
+      best = { x: s.x1, y: s.y1, screenX: p1.x, screenY: p1.y };
+    }
+    const p2 = worldToScreen(s.x2, s.y2);
+    const d2 = Math.hypot(p2.x - screenX, p2.y - screenY);
+    if (d2 < bestDist) {
+      bestDist = d2;
+      best = { x: s.x2, y: s.y2, screenX: p2.x, screenY: p2.y };
+    }
+  }
+
+  // Check active measurement first point (to snap close polygon!)
+  if (currentTool === 'area' && activeMeasurePoints.length >= 3) {
+    const p0 = worldToScreen(activeMeasurePoints[0].x, activeMeasurePoints[0].y);
+    const d0 = Math.hypot(p0.x - screenX, p0.y - screenY);
+    if (d0 < 18) {
+      return { x: activeMeasurePoints[0].x, y: activeMeasurePoints[0].y, screenX: p0.x, screenY: p0.y, isStart: true };
+    }
+  }
+
+  return best;
+}
+
+function calculateShoelaceArea(polygon) {
+  let area = 0;
+  for (let i = 0; i < polygon.length; i++) {
+    const j = (i + 1) % polygon.length;
+    area += polygon[i][0] * polygon[j][1];
+    area -= polygon[j][0] * polygon[i][1];
+  }
+  return area / 2;
+}
+
+function calculatePolygonPerimeter(polygon) {
+  let perim = 0;
+  for (let i = 0; i < polygon.length; i++) {
+    const j = (i + 1) % polygon.length;
+    perim += Math.hypot(polygon[j][0] - polygon[i][0], polygon[j][1] - polygon[i][1]);
+  }
+  return perim;
+}
+
+function finishAreaTakeoff() {
+  if (activeMeasurePoints.length < 3) return;
+  const polyCoords = activeMeasurePoints.map(p => [p.x, p.y]);
+  const areaSqm = (Math.abs(calculateShoelaceArea(polyCoords)) / 1000000) * (scaleCalibrationFactor ** 2);
+  const areaSqft = Math.round(areaSqm * SQM_TO_SQFT);
+  const perimeterM = (calculatePolygonPerimeter(polyCoords) / 1000) * scaleCalibrationFactor;
+  const perimeterRft = Math.round(perimeterM * M_TO_RFT);
+
+  const count = customTakeoffs.filter(t => t.type === 'area').length + 1;
+  const name = prompt("Name this Area Takeoff (e.g. Executive Cabin Flooring, Cafeteria Ceiling):", `Area Takeoff #${count}`) || `Area #${count}`;
+
+  const colors = ["#E8601C", "#0284C7", "#7C3AED", "#059669", "#EA580C", "#DB2777"];
+  const color = colors[count % colors.length];
+
+  customTakeoffs.push({
+    id: `custom_area_${Date.now()}`,
+    type: 'area',
+    name: name,
+    polygon: polyCoords,
+    color: color,
+    fill: hexToRgba(color, 0.16),
+    areaSqft: areaSqft,
+    areaSqm: Number(areaSqm.toFixed(2)),
+    perimeterRft: perimeterRft,
+    visible: true,
+    createdAt: new Date().toLocaleTimeString()
+  });
+
+  activeMeasurePoints = [];
+  updateCustomTakeoffCountBadge();
+  setTool('select');
+  setupUI();
+  render();
+}
+
+function finishLinearTakeoff() {
+  if (activeMeasurePoints.length < 2) return;
+  const pts = activeMeasurePoints.map(p => [p.x, p.y]);
+  let lengthMm = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    lengthMm += Math.hypot(pts[i+1][0] - pts[i][0], pts[i+1][1] - pts[i][1]);
+  }
+  const lengthM = (lengthMm / 1000) * scaleCalibrationFactor;
+  const lengthRft = Math.round(lengthM * M_TO_RFT);
+
+  const count = customTakeoffs.filter(t => t.type === 'linear').length + 1;
+  const name = prompt("Name this Linear Takeoff (e.g. Drywall Partition, Skirting, Glazing Wall):", `Linear Wall #${count}`) || `Linear Wall #${count}`;
+
+  customTakeoffs.push({
+    id: `custom_linear_${Date.now()}`,
+    type: 'linear',
+    name: name,
+    points: pts,
+    color: "#0284C7",
+    lengthRft: lengthRft,
+    lengthM: Number(lengthM.toFixed(2)),
+    visible: true,
+    createdAt: new Date().toLocaleTimeString()
+  });
+
+  activeMeasurePoints = [];
+  updateCustomTakeoffCountBadge();
+  setTool('select');
+  setupUI();
+  render();
+}
+
+function addCountTakeoffPoint(pt) {
+  let activeCount = customTakeoffs.find(t => t.type === 'count' && t.isActiveCountGroup);
+  if (!activeCount) {
+    const countNum = customTakeoffs.filter(t => t.type === 'count').length + 1;
+    activeCount = {
+      id: `custom_count_${Date.now()}`,
+      type: 'count',
+      name: `Fixture Count #${countNum}`,
+      points: [],
+      color: "#D97706",
+      count: 0,
+      visible: true,
+      isActiveCountGroup: true,
+      createdAt: new Date().toLocaleTimeString()
+    };
+    customTakeoffs.push(activeCount);
+  }
+  activeCount.points.push([pt.x, pt.y]);
+  activeCount.count = activeCount.points.length;
+  updateCustomTakeoffCountBadge();
+  setupUI();
+  render();
+}
+
+function openScaleCalibrateModal(distMm) {
+  const modal = document.getElementById('scaleCalibrateModal');
+  const distEl = document.getElementById('calibMeasuredDist');
+  const realInput = document.getElementById('calibRealDist');
+  if (!modal) return;
+
+  const measuredFt = ((distMm / 1000) * M_TO_RFT).toFixed(1);
+  if (distEl) distEl.innerText = `${Math.round(distMm).toLocaleString()} mm (${measuredFt} ft)`;
+  if (realInput) realInput.value = Math.round(distMm);
+
+  modal.setAttribute('data-measured-mm', distMm);
+  modal.showModal();
+}
+
+function updatePlanSwiftHUD(clientX, clientY) {
+  const hud = document.getElementById('planswiftHud');
+  const valEl = document.getElementById('hudMeasureVal');
+  const hintEl = document.getElementById('hudHintText');
+  if (!hud || !valEl || !hintEl) return;
+
+  if (currentTool === 'select') {
+    hud.style.display = 'none';
+    return;
+  }
+
+  hud.style.display = 'flex';
+  const containerRect = canvas.parentElement.getBoundingClientRect();
+  const left = clientX - containerRect.left + 14;
+  const top = clientY - containerRect.top + 14;
+  hud.style.left = `${left}px`;
+  hud.style.top = `${top}px`;
+
+  if (currentTool === 'area') {
+    if (activeMeasurePoints.length === 0) {
+      valEl.innerText = "Area Takeoff: 0 sqft";
+      hintEl.innerText = snapEnabled ? "Click 1st corner (Snap active)" : "Click 1st corner";
+    } else {
+      const tempPts = [...activeMeasurePoints.map(p => [p.x, p.y]), [currentMouseWorld.x, currentMouseWorld.y]];
+      const liveSqm = (Math.abs(calculateShoelaceArea(tempPts)) / 1000000) * (scaleCalibrationFactor ** 2);
+      const liveSqft = Math.round(liveSqm * SQM_TO_SQFT);
+      const livePerim = Math.round(((calculatePolygonPerimeter(tempPts) / 1000) * scaleCalibrationFactor) * M_TO_RFT);
+      valEl.innerHTML = `Area: <strong>${liveSqft.toLocaleString()} sqft</strong> (${livePerim} Rft)`;
+      hintEl.innerText = activeMeasurePoints.length >= 3 ? "Click start point to close · Double-click to finish" : "Click next vertex · Esc to cancel";
+    }
+  } else if (currentTool === 'linear') {
+    if (activeMeasurePoints.length === 0) {
+      valEl.innerText = "Linear Takeoff: 0.0 Rft";
+      hintEl.innerText = "Click starting point";
+    } else {
+      let lenMm = 0;
+      for (let i = 0; i < activeMeasurePoints.length - 1; i++) {
+        lenMm += Math.hypot(activeMeasurePoints[i+1].x - activeMeasurePoints[i].x, activeMeasurePoints[i+1].y - activeMeasurePoints[i].y);
+      }
+      const last = activeMeasurePoints[activeMeasurePoints.length - 1];
+      const segMm = Math.hypot(currentMouseWorld.x - last.x, currentMouseWorld.y - last.y);
+      lenMm += segMm;
+      const totalRft = (((lenMm / 1000) * scaleCalibrationFactor) * M_TO_RFT).toFixed(1);
+      const segRft = (((segMm / 1000) * scaleCalibrationFactor) * M_TO_RFT).toFixed(1);
+      valEl.innerHTML = `Total: <strong>${totalRft} Rft</strong> (Seg: ${segRft} Rft)`;
+      hintEl.innerText = "Click next point · Double-click to finish · Esc to cancel";
+    }
+  } else if (currentTool === 'count') {
+    const activeGroup = customTakeoffs.find(t => t.type === 'count' && t.isActiveCountGroup);
+    const c = activeGroup ? activeGroup.count : 0;
+    valEl.innerHTML = `Count: <strong>${c} placed</strong>`;
+    hintEl.innerText = "Click to stamp item · Esc to complete count";
+  } else if (currentTool === 'dimension') {
+    if (activeMeasurePoints.length === 0) {
+      valEl.innerText = "Ruler: Pick 1st Point";
+      hintEl.innerText = "Click start point of measurement";
+    } else {
+      const p1 = activeMeasurePoints[0];
+      const distMm = Math.hypot(currentMouseWorld.x - p1.x, currentMouseWorld.y - p1.y) * scaleCalibrationFactor;
+      const distFt = ((distMm / 1000) * M_TO_RFT).toFixed(1);
+      valEl.innerHTML = `Distance: <strong>${Math.round(distMm).toLocaleString()} mm</strong> (${distFt} ft)`;
+      hintEl.innerText = "Click 2nd point to measure & calibrate scale";
+    }
+  }
+}
+
+function drawPlanSwiftOverlays() {
+  // 1. Draw Custom Takeoffs
+  customTakeoffs.forEach(to => {
+    if (!to.visible) return;
+    ctx.save();
+    if (to.type === 'area' && to.polygon && to.polygon.length >= 3) {
+      ctx.beginPath();
+      to.polygon.forEach((pt, idx) => {
+        const s = worldToScreen(pt[0], pt[1]);
+        if (idx === 0) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      });
+      ctx.closePath();
+      ctx.fillStyle = to.fill || hexToRgba(to.color, 0.16);
+      ctx.fill();
+      ctx.strokeStyle = to.color;
+      ctx.lineWidth = 2.2;
+      ctx.setLineDash([6, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Label at center
+      const avgX = to.polygon.reduce((sum, p) => sum + p[0], 0) / to.polygon.length;
+      const avgY = to.polygon.reduce((sum, p) => sum + p[1], 0) / to.polygon.length;
+      const center = worldToScreen(avgX, avgY);
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.shadowColor = "rgba(0,0,0,0.12)";
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      const badgeW = Math.max(110, ctx.measureText(to.name).width + 24);
+      if (ctx.roundRect) ctx.roundRect(center.x - badgeW / 2, center.y - 14, badgeW, 28, 6);
+      else ctx.rect(center.x - badgeW / 2, center.y - 14, badgeW, 28);
+      ctx.fill();
+      ctx.shadowColor = "transparent";
+      ctx.strokeStyle = to.color;
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#0F172A";
+      ctx.font = "bold 10px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(to.name, center.x, center.y - 2);
+      ctx.fillStyle = to.color;
+      ctx.font = "bold 9px Inter, sans-serif";
+      ctx.fillText(`${to.areaSqft.toLocaleString()} sqft · ${to.perimeterRft} Rft`, center.x, center.y + 9);
+
+    } else if (to.type === 'linear' && to.points && to.points.length >= 2) {
+      ctx.beginPath();
+      to.points.forEach((pt, idx) => {
+        const s = worldToScreen(pt[0], pt[1]);
+        if (idx === 0) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      });
+      ctx.strokeStyle = to.color;
+      ctx.lineWidth = 2.8;
+      ctx.stroke();
+
+      to.points.forEach(pt => {
+        const s = worldToScreen(pt[0], pt[1]);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = to.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+    } else if (to.type === 'count' && to.points) {
+      to.points.forEach((pt, pIdx) => {
+        const s = worldToScreen(pt[0], pt[1]);
+        ctx.fillStyle = to.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 11, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "bold 10px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(`${pIdx + 1}`, s.x, s.y);
+      });
+    }
+    ctx.restore();
+  });
+
+  // 2. Draw In-Progress Rubberband Measurement
+  if (activeMeasurePoints.length > 0) {
+    ctx.save();
+    const currScr = snappedVertex ? { x: snappedVertex.screenX, y: snappedVertex.screenY } : currentMouseScreen;
+
+    if (currentTool === 'area') {
+      ctx.beginPath();
+      activeMeasurePoints.forEach((p, idx) => {
+        const s = worldToScreen(p.x, p.y);
+        if (idx === 0) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      });
+      ctx.lineTo(currScr.x, currScr.y);
+      ctx.fillStyle = "rgba(232, 96, 28, 0.14)";
+      ctx.fill();
+
+      ctx.strokeStyle = "#E8601C";
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      activeMeasurePoints.forEach((p, idx) => {
+        const s = worldToScreen(p.x, p.y);
+        ctx.fillStyle = idx === 0 ? "#E8601C" : "#FFFFFF";
+        ctx.strokeStyle = "#E8601C";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, idx === 0 ? 6 : 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+    } else if (currentTool === 'linear') {
+      ctx.beginPath();
+      activeMeasurePoints.forEach((p, idx) => {
+        const s = worldToScreen(p.x, p.y);
+        if (idx === 0) ctx.moveTo(s.x, s.y);
+        else ctx.lineTo(s.x, s.y);
+      });
+      ctx.lineTo(currScr.x, currScr.y);
+      ctx.strokeStyle = "#0284C7";
+      ctx.lineWidth = 2.2;
+      ctx.setLineDash([5, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      activeMeasurePoints.forEach(p => {
+        const s = worldToScreen(p.x, p.y);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.strokeStyle = "#0284C7";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+    } else if (currentTool === 'dimension') {
+      const p0 = worldToScreen(activeMeasurePoints[0].x, activeMeasurePoints[0].y);
+      ctx.beginPath();
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(currScr.x, currScr.y);
+      ctx.strokeStyle = "#E8601C";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#E8601C";
+      ctx.beginPath();
+      ctx.arc(p0.x, p0.y, 4, 0, Math.PI * 2);
+      ctx.arc(currScr.x, currScr.y, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      const midX = (p0.x + currScr.x) / 2;
+      const midY = (p0.y + currScr.y) / 2;
+      const distMm = Math.hypot(currentMouseWorld.x - activeMeasurePoints[0].x, currentMouseWorld.y - activeMeasurePoints[0].y);
+      const badgeText = `${Math.round(distMm).toLocaleString()} mm (${((distMm/1000)*M_TO_RFT).toFixed(1)} ft)`;
+
+      ctx.fillStyle = "#0F172A";
+      ctx.shadowColor = "rgba(0,0,0,0.15)";
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      const tw = ctx.measureText(badgeText).width + 16;
+      if (ctx.roundRect) ctx.roundRect(midX - tw / 2, midY - 12, tw, 22, 4);
+      else ctx.rect(midX - tw / 2, midY - 12, tw, 22);
+      ctx.fill();
+      ctx.shadowColor = "transparent";
+
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 10px Inter, sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(badgeText, midX, midY);
+    }
+    ctx.restore();
+  }
+
+  // 3. Draw Snapped CAD Endpoint Marker
+  if (snappedVertex) {
+    ctx.save();
+    ctx.strokeStyle = "#E8601C";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const sz = snappedVertex.isStart ? 8 : 5;
+    ctx.rect(snappedVertex.screenX - sz, snappedVertex.screenY - sz, sz * 2, sz * 2);
+    ctx.stroke();
+    if (snappedVertex.isStart) {
+      ctx.fillStyle = "rgba(232, 96, 28, 0.25)";
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // 4. Draw Precision Full-Canvas CAD Crosshair
+  if (showCrosshair || currentTool !== 'select') {
+    ctx.save();
+    ctx.strokeStyle = "rgba(15, 23, 42, 0.22)";
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(0, currentMouseScreen.y);
+    ctx.lineTo(canvas.width, currentMouseScreen.y);
+    ctx.moveTo(currentMouseScreen.x, 0);
+    ctx.lineTo(currentMouseScreen.x, canvas.height);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
+function updateMinimap() {
+  if (!showMinimap || !minimapCanvas || !minimapCtx || !drawingData || !drawingData.segments || drawingData.segments.length === 0) return;
+
+  const mw = minimapCanvas.width;
+  const mh = minimapCanvas.height;
+  minimapCtx.clearRect(0, 0, mw, mh);
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  drawingData.segments.forEach(s => {
+    minX = Math.min(minX, s.x1, s.x2);
+    maxX = Math.max(maxX, s.x1, s.x2);
+    minY = Math.min(minY, s.y1, s.y2);
+    maxY = Math.max(maxY, s.y1, s.y2);
+  });
+  const rangeX = (maxX - minX) || 1000;
+  const rangeY = (maxY - minY) || 1000;
+  const pad = 6;
+  const mScale = Math.min((mw - pad * 2) / rangeX, (mh - pad * 2) / rangeY);
+  const mOffsetX = (mw - rangeX * mScale) / 2;
+  const mOffsetY = (mh - rangeY * mScale) / 2;
+
+  minimapCtx.strokeStyle = "#94A3B8";
+  minimapCtx.lineWidth = 0.8;
+  minimapCtx.beginPath();
+  drawingData.segments.forEach(s => {
+    const x1 = mOffsetX + (s.x1 - minX) * mScale;
+    const y1 = mh - (mOffsetY + (s.y1 - minY) * mScale);
+    const x2 = mOffsetX + (s.x2 - minX) * mScale;
+    const y2 = mh - (mOffsetY + (s.y2 - minY) * mScale);
+    minimapCtx.moveTo(x1, y1);
+    minimapCtx.lineTo(x2, y2);
+  });
+  minimapCtx.stroke();
+
+  const vpRect = document.getElementById('minimapViewportRect');
+  if (vpRect) {
+    const topLeftWorld = screenToWorld(0, 0);
+    const bottomRightWorld = screenToWorld(canvas.width, canvas.height);
+
+    const vx1 = mOffsetX + (topLeftWorld.x - minX) * mScale;
+    const vy1 = mh - (mOffsetY + (topLeftWorld.y - minY) * mScale);
+    const vx2 = mOffsetX + (bottomRightWorld.x - minX) * mScale;
+    const vy2 = mh - (mOffsetY + (bottomRightWorld.y - minY) * mScale);
+
+    const rx = Math.max(0, Math.min(vx1, vx2));
+    const ry = Math.max(0, Math.min(vy1, vy2));
+    const rw = Math.min(mw, Math.abs(vx2 - vx1));
+    const rh = Math.min(mh, Math.abs(vy2 - vy1));
+
+    vpRect.style.left = `${rx}px`;
+    vpRect.style.top = `${ry}px`;
+    vpRect.style.width = `${Math.max(12, rw)}px`;
+    vpRect.style.height = `${Math.max(8, rh)}px`;
+  }
+}
+
+function panFromMinimap(e) {
+  if (!drawingData || !drawingData.segments) return;
+  const rect = minimapCanvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  drawingData.segments.forEach(s => {
+    minX = Math.min(minX, s.x1, s.x2);
+    maxX = Math.max(maxX, s.x1, s.x2);
+    minY = Math.min(minY, s.y1, s.y2);
+    maxY = Math.max(maxY, s.y1, s.y2);
+  });
+  const rangeX = (maxX - minX) || 1000;
+  const rangeY = (maxY - minY) || 1000;
+  const pad = 6;
+  const mScale = Math.min((minimapCanvas.width - pad * 2) / rangeX, (minimapCanvas.height - pad * 2) / rangeY);
+  const mOffsetX = (minimapCanvas.width - rangeX * mScale) / 2;
+  const mOffsetY = (minimapCanvas.height - rangeY * mScale) / 2;
+
+  const worldTargetX = minX + (mx - mOffsetX) / mScale;
+  const worldTargetY = minY + (minimapCanvas.height - my - mOffsetY) / mScale;
+
+  panX = canvas.width / 2 - worldTargetX * scale;
+  panY = canvas.height / 2 + worldTargetY * scale;
+  render();
+}
+
+function renderCustomAssembliesUI(list) {
+  updateCustomTakeoffCountBadge();
+
+  if (customTakeoffs.length === 0) {
+    list.innerHTML = `
+      <div class="empty-state" style="padding:28px 16px">
+        <div class="empty-icon" style="font-size:1.3rem">📐</div>
+        <h3>No PlanSwift Takeoffs Yet</h3>
+        <p>Use the <strong>Area</strong>, <strong>Linear</strong>, or <strong>Count</strong> buttons in the top ribbon to draw and measure spaces, partitions, and fixtures.</p>
+      </div>
+    `;
+    return;
+  }
+
+  let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span style="font-size:0.70rem;font-weight:700;color:var(--t3);text-transform:uppercase">PlanSwift Assemblies (${customTakeoffs.length})</span>
+    <button class="mini-btn" id="btnClearAllCustom" style="color:var(--red)">Clear All</button>
+  </div>`;
+
+  customTakeoffs.forEach((to, idx) => {
+    let metricText = '';
+    if (to.type === 'area') {
+      metricText = `<span>Area: <strong>${to.areaSqft.toLocaleString()} sqft</strong> (${to.areaSqm} m²)</span> <span>Perim: ${to.perimeterRft} Rft</span>`;
+    } else if (to.type === 'linear') {
+      metricText = `<span>Length: <strong>${to.lengthRft.toLocaleString()} Rft</strong> (${to.lengthM} m)</span>`;
+    } else if (to.type === 'count') {
+      metricText = `<span>Count: <strong>${to.count} Nos</strong></span>`;
+    }
+
+    html += `
+      <div class="assembly-card" data-takeoff-id="${to.id}">
+        <div class="assembly-header">
+          <div class="assembly-badge">
+            <div class="assembly-swatch" style="background:${to.color}"></div>
+            <span>${to.name}</span>
+          </div>
+          <div class="assembly-actions">
+            <button class="assembly-btn" data-action="toggle" data-idx="${idx}" title="${to.visible ? 'Hide on canvas' : 'Show on canvas'}">
+              ${to.visible ? '👁️' : '🕶️'}
+            </button>
+            <button class="assembly-btn" data-action="delete" data-idx="${idx}" title="Delete takeoff">
+              🗑️
+            </button>
+          </div>
+        </div>
+        <div class="assembly-metrics">
+          ${metricText}
+        </div>
+      </div>
+    `;
+  });
+
+  list.innerHTML = html;
+
+  list.querySelectorAll('.assembly-card').forEach(card => {
+    card.onclick = (e) => {
+      if (e.target.closest('.assembly-btn')) return;
+      const id = card.getAttribute('data-takeoff-id');
+      const item = customTakeoffs.find(t => t.id === id);
+      if (item) highlightCustomTakeoff(item);
+    };
+  });
+
+  list.querySelectorAll('.assembly-btn[data-action="toggle"]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      if (customTakeoffs[idx]) {
+        customTakeoffs[idx].visible = !customTakeoffs[idx].visible;
+        renderCustomAssembliesUI(list);
+        render();
+      }
+    };
+  });
+
+  list.querySelectorAll('.assembly-btn[data-action="delete"]').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      if (customTakeoffs[idx]) {
+        customTakeoffs.splice(idx, 1);
+        renderCustomAssembliesUI(list);
+        updateCustomTakeoffCountBadge();
+        render();
+      }
+    };
+  });
+
+  const btnClearAll = document.getElementById('btnClearAllCustom');
+  if (btnClearAll) {
+    btnClearAll.onclick = () => {
+      if (confirm("Delete all custom takeoff assemblies?")) {
+        customTakeoffs = [];
+        renderCustomAssembliesUI(list);
+        updateCustomTakeoffCountBadge();
+        render();
+      }
+    };
+  }
+}
+
+function updateCustomTakeoffCountBadge() {
+  const countBadge = document.getElementById('customTakeoffCountBadge');
+  if (countBadge) countBadge.innerText = customTakeoffs.length;
+}
+
+function highlightCustomTakeoff(to) {
+  if (to.type === 'area' && to.polygon && to.polygon.length > 0) {
+    const avgX = to.polygon.reduce((sum, p) => sum + p[0], 0) / to.polygon.length;
+    const avgY = to.polygon.reduce((sum, p) => sum + p[1], 0) / to.polygon.length;
+    panX = canvas.width / 2 - avgX * scale;
+    panY = canvas.height / 2 + avgY * scale;
+    render();
+  } else if (to.type === 'linear' && to.points && to.points.length > 0) {
+    const avgX = to.points.reduce((sum, p) => sum + p[0], 0) / to.points.length;
+    const avgY = to.points.reduce((sum, p) => sum + p[1], 0) / to.points.length;
+    panX = canvas.width / 2 - avgX * scale;
+    panY = canvas.height / 2 + avgY * scale;
+    render();
+  }
+}
+
+function hexToRgba(hex, alpha = 0.2) {
+  if (!hex || !hex.startsWith('#')) return `rgba(232, 96, 28, ${alpha})`;
+  let c = hex.slice(1);
+  if (c.length === 3) c = c.split('').map(x => x + x).join('');
+  const num = parseInt(c, 16);
+  return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
 }

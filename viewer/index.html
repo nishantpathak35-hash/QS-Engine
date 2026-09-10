@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QS Engine — Construct-O-Genie</title>
-  <meta name="description" content="AI-powered Quantification Engine for interior fit-out drawings. Auto-scale, BOQ, priced estimates.">
-  <link rel="stylesheet" href="styles.css?v=cog3.1">
+  <title>QS Engine — Construct-O-Genie (PlanSwift Workstation)</title>
+  <meta name="description" content="AI-powered Quantification Engine with PlanSwift-style interactive takeoffs, auto-scale, and BOQ pricing.">
+  <link rel="stylesheet" href="styles.css?v=ps1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@
 
       <div class="brand-module">
         <span class="mod-name">QS Engine</span>
-        <span class="mod-tag">Quantification &amp; Pricing</span>
+        <span class="mod-tag">Takeoff &amp; Estimating</span>
       </div>
     </div>
 
@@ -42,7 +42,7 @@
 
       <!-- Scale badge -->
       <div class="badge badge-brand" id="scaleIndicatorBadge"
-           title="AI auto-calibrates scale from witness lines">
+           title="AI auto-calibrates scale or click Ruler to calibrate">
         <span id="scaleLabelText">Auto-Calibrating Scale…</span>
       </div>
 
@@ -87,27 +87,92 @@
   <!-- ── Main Layout ──────────────────────────────────────────────────────── -->
   <main class="main-container">
 
-    <!-- Interactive CAD Canvas -->
+    <!-- Interactive CAD Canvas Viewport -->
     <section class="canvas-container" id="canvasViewport" aria-label="CAD Drawing Canvas">
       <canvas id="cadCanvas"></canvas>
 
-      <!-- Trade Filter Pill Bar -->
-      <div class="trade-filter-bar" id="tradeFilterBar" role="toolbar" aria-label="Trade Filter">
-        <button class="trade-btn active" data-trade="all"       title="All layers">All Trades</button>
-        <button class="trade-btn" data-trade="flooring"         title="Flooring & Skirting">Flooring</button>
-        <button class="trade-btn" data-trade="partitions"       title="Partitions & Glass">Partitions</button>
-        <button class="trade-btn" data-trade="doors"            title="Doors & Openings">Doors</button>
-        <button class="trade-btn" data-trade="ceilings"         title="False Ceilings">Ceilings</button>
-        <button class="trade-btn" data-trade="fixtures"         title="Furniture & Workstations">Furniture</button>
-        <button class="trade-btn" data-trade="joinery"          title="Millwork & Storage">Joinery</button>
-        <button class="trade-btn" data-trade="av"               title="AV & Displays">AV</button>
+      <!-- ── PlanSwift-Inspired Takeoff Ribbon Bar ────────────────────────── -->
+      <div class="planswift-ribbon" id="planswiftRibbon" role="toolbar" aria-label="Takeoff Tools">
+        <!-- Interactive PlanSwift Takeoff Tools -->
+        <div class="ribbon-group ribbon-tools">
+          <button class="ribbon-btn active" id="toolSelect" data-tool="select" title="Select & Pan (V / Space)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="M13 13l6 6"/></svg>
+            <span>Select</span>
+          </button>
+          <button class="ribbon-btn" id="toolArea" data-tool="area" title="Area Takeoff (A) — Click points to measure floor, ceiling, or room polygon (sqft)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span>Area</span>
+          </button>
+          <button class="ribbon-btn" id="toolLinear" data-tool="linear" title="Linear Takeoff (L) — Measure wall length, partitions, skirting (Rft)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="2" y1="12" x2="22" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="12" y1="10" x2="12" y2="14"/></svg>
+            <span>Linear</span>
+          </button>
+          <button class="ribbon-btn" id="toolCount" data-tool="count" title="Count Takeoff (C) — Count doors, fixtures, lighting, workstations">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><text x="12" y="16" font-size="11" font-weight="700" text-anchor="middle" fill="currentColor" stroke="none">#</text></svg>
+            <span>Count</span>
+          </button>
+          <button class="ribbon-btn" id="toolDimension" data-tool="dimension" title="Ruler & Scale Calibrate (D) — Measure distance & calibrate drawing scale">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.3 8.7l-6-6a1 1 0 0 0-1.4 0l-11 11a1 1 0 0 0 0 1.4l6 6a1 1 0 0 0 1.4 0l11-11a1 1 0 0 0 0-1.4z"/><line x1="7.5" y1="10.5" x2="9" y2="9"/><line x1="10.5" y1="13.5" x2="12" y2="12"/><line x1="13.5" y1="16.5" x2="15" y2="15"/></svg>
+            <span>Ruler</span>
+          </button>
+        </div>
+
+        <div class="ribbon-separator"></div>
+
+        <!-- Trade Filter Pills -->
+        <div class="ribbon-group ribbon-trades" id="tradeFilterBar" role="toolbar" aria-label="Trade Filter">
+          <button class="trade-btn active" data-trade="all" title="All layers">All</button>
+          <button class="trade-btn" data-trade="flooring" title="Flooring &amp; Skirting">Flooring</button>
+          <button class="trade-btn" data-trade="partitions" title="Partitions &amp; Glass">Partitions</button>
+          <button class="trade-btn" data-trade="doors" title="Doors &amp; Openings">Doors</button>
+          <button class="trade-btn" data-trade="ceilings" title="False Ceilings">Ceilings</button>
+          <button class="trade-btn" data-trade="fixtures" title="Furniture &amp; Workstations">Furniture</button>
+          <button class="trade-btn" data-trade="joinery" title="Millwork &amp; Storage">Joinery</button>
+          <button class="trade-btn" data-trade="av" title="AV &amp; Displays">AV</button>
+        </div>
+
+        <div class="ribbon-separator"></div>
+
+        <!-- PlanSwift Precision Utilities -->
+        <div class="ribbon-group ribbon-utils">
+          <button class="ribbon-btn ribbon-toggle active" id="btnToggleSnap" title="Snap to CAD Vertices (S)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9" stroke-dasharray="3 3"/></svg>
+            <span>Snap</span>
+          </button>
+          <button class="ribbon-btn ribbon-toggle" id="btnToggleCrosshair" title="Toggle Full CAD Digitizer Crosshair">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="6"/></svg>
+            <span>Crosshair</span>
+          </button>
+          <button class="ribbon-btn ribbon-toggle active" id="btnToggleMinimap" title="Toggle PlanSwift Overview Minimap (M)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="11" y="11" width="7" height="7" rx="1" fill="currentColor" opacity="0.3"/></svg>
+            <span>Minimap</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── PlanSwift Overview Minimap ────────────────────────────────────── -->
+      <div class="planswift-minimap" id="minimapContainer" title="Click or drag to pan overview">
+        <div class="minimap-header">
+          <span>Overview</span>
+          <button id="btnCloseMinimap" title="Hide Minimap">✕</button>
+        </div>
+        <div style="position:relative">
+          <canvas id="minimapCanvas" width="170" height="110"></canvas>
+          <div id="minimapViewportRect" class="minimap-viewport"></div>
+        </div>
+      </div>
+
+      <!-- ── PlanSwift Precision Mouse Hint HUD ────────────────────────────── -->
+      <div class="planswift-hud" id="planswiftHud" style="display:none">
+        <div class="hud-stat" id="hudMeasureVal">0.00</div>
+        <div class="hud-hint" id="hudHintText">Click point to start</div>
       </div>
 
       <!-- Viewport Zoom Controls -->
       <div class="viewport-controls">
-        <button class="ctrl-btn" id="btnZoomIn"  title="Zoom In">+</button>
+        <button class="ctrl-btn" id="btnZoomIn" title="Zoom In">+</button>
         <button class="ctrl-btn" id="btnZoomOut" title="Zoom Out">−</button>
-        <button class="ctrl-btn" id="btnReset"   title="Fit to Screen">Fit</button>
+        <button class="ctrl-btn" id="btnReset" title="Fit to Screen">Fit</button>
         <div class="zoom-info" id="zoomLevelInfo">100%</div>
       </div>
     </section>
@@ -176,6 +241,7 @@
           <button class="tab-btn active" id="tabSummary">BOQ Summary</button>
           <button class="tab-btn" id="tabPricing">Priced BOQ</button>
           <button class="tab-btn" id="tabRooms">Room Schedule</button>
+          <button class="tab-btn" id="tabCustom">Assemblies (<span id="customTakeoffCountBadge">0</span>)</button>
         </div>
       </div>
 
@@ -205,6 +271,30 @@
     </aside>
   </main>
 
-  <script src="viewer.js?v=cog3.1"></script>
+  <!-- Scale Calibration Modal -->
+  <dialog id="scaleCalibrateModal" class="ps-modal">
+    <form method="dialog" id="scaleCalibrateForm">
+      <h3>Calibrate Drawing Scale</h3>
+      <p>Measured distance between the 2 selected points: <strong id="calibMeasuredDist" style="color:var(--brand)">-</strong></p>
+      <div class="modal-input-group">
+        <label for="calibRealDist">Enter Real-World Dimension:</label>
+        <div style="display:flex;gap:6px">
+          <input type="number" id="calibRealDist" step="any" placeholder="e.g. 3000" style="flex:1" required>
+          <select id="calibUnit" style="width:90px">
+            <option value="mm" selected>mm</option>
+            <option value="m">meters</option>
+            <option value="ft">feet</option>
+            <option value="in">inches</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="ctrl-btn" id="btnCancelCalib">Cancel</button>
+        <button type="submit" class="cta-btn" id="btnApplyCalib">Apply Calibration</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="viewer.js?v=ps1.0"></script>
 </body>
 </html>

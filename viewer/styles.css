@@ -295,31 +295,82 @@ body {
   left: 0;
 }
 
-/* ── TRADE FILTER PILL BAR ────────────────────────────────────────────── */
-.trade-filter-bar {
+/* ── PLANSWIFT TAKEOFF RIBBON BAR ────────────────────────────────────── */
+.planswift-ribbon {
   position: absolute;
-  top: 14px;
+  top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--r-full);
-  padding: 3px 5px;
+  padding: 4px 8px;
   display: flex;
-  gap: 2px;
+  align-items: center;
+  gap: 5px;
   box-shadow: var(--shadow-md);
-  z-index: 5;
+  z-index: 8;
+  max-width: calc(100% - 32px);
+  overflow-x: auto;
 }
 
+.ribbon-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.ribbon-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+.ribbon-btn {
+  background: transparent;
+  color: var(--t2);
+  border: 1px solid transparent;
+  padding: 5px 11px;
+  border-radius: var(--r-full);
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  font-family: var(--font);
+}
+.ribbon-btn:hover {
+  background: var(--surface-3);
+  color: var(--t1);
+}
+.ribbon-btn.active {
+  background: var(--brand-light);
+  border-color: var(--brand-border);
+  color: var(--brand);
+  font-weight: 600;
+}
+.ribbon-btn.ribbon-toggle.active {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+  color: var(--t1);
+  font-weight: 600;
+}
+
+/* ── TRADE FILTER PILLS (INTEGRATED IN RIBBON) ───────────────────────── */
 .trade-btn {
   background: transparent;
   color: var(--t3);
   border: 1px solid transparent;
-  padding: 5px 12px;
+  padding: 5px 10px;
   border-radius: var(--r-full);
-  font-size: 0.72rem;
+  font-size: 0.71rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -331,10 +382,11 @@ body {
   background: var(--surface-3);
 }
 .trade-btn.active {
-  background: var(--brand-light);
-  border-color: var(--brand-border);
-  color: var(--brand);
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--t1);
   font-weight: 600;
+  box-shadow: var(--shadow-xs);
 }
 
 /* ── VIEWPORT CONTROLS ────────────────────────────────────────────────── */
@@ -802,3 +854,215 @@ body {
   outline-offset: -8px;
   background-color: var(--brand-light) !important;
 }
+
+/* ── PLANSWIFT OVERVIEW MINIMAP ──────────────────────────────────────── */
+.planswift-minimap {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  width: 170px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+}
+.minimap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-size: 0.64rem;
+  font-weight: 700;
+  color: var(--t4);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.minimap-header button {
+  background: transparent;
+  border: none;
+  color: var(--t4);
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+.minimap-header button:hover { color: var(--t1); }
+#minimapCanvas {
+  width: 170px;
+  height: 110px;
+  display: block;
+  background: #F8FAFC;
+  cursor: crosshair;
+}
+.minimap-viewport {
+  position: absolute;
+  border: 1.5px solid var(--brand);
+  background: rgba(232, 96, 28, 0.14);
+  pointer-events: none;
+  border-radius: 2px;
+}
+
+/* ── PLANSWIFT MOUSE HINT HUD ────────────────────────────────────────── */
+.planswift-hud {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  background: rgba(15, 23, 42, 0.88);
+  color: #FFFFFF;
+  backdrop-filter: blur(4px);
+  padding: 5px 9px;
+  border-radius: 6px;
+  font-size: 0.70rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translate(14px, 14px);
+  transition: opacity 0.1s ease;
+  white-space: nowrap;
+}
+.hud-stat {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hud-hint {
+  font-size: 0.62rem;
+  color: #94A3B8;
+  font-weight: 400;
+}
+
+/* ── PLANSWIFT SCALE CALIBRATION MODAL ────────────────────────────────── */
+.ps-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  max-width: 380px;
+  width: 90%;
+}
+.ps-modal::backdrop {
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(2px);
+}
+.ps-modal h3 {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--t1);
+  margin-bottom: 6px;
+}
+.ps-modal p {
+  font-size: 0.76rem;
+  color: var(--t3);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.modal-input-group {
+  margin-bottom: 16px;
+}
+.modal-input-group label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--t2);
+  margin-bottom: 4px;
+}
+.modal-input-group input, .modal-input-group select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  color: var(--t1);
+  outline: none;
+  font-family: var(--font);
+}
+.modal-input-group input:focus {
+  border-color: var(--brand-border);
+  box-shadow: 0 0 0 3px var(--brand-mid);
+}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ── CUSTOM TAKEOFF ASSEMBLIES (PLANSIWFT) ───────────────────────────── */
+.assembly-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--shadow-xs);
+  transition: all 0.15s ease;
+}
+.assembly-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+}
+.assembly-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.assembly-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--t1);
+}
+.assembly-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.assembly-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.assembly-btn {
+  background: transparent;
+  border: none;
+  color: var(--t4);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.72rem;
+}
+.assembly-btn:hover {
+  background: var(--surface-3);
+  color: var(--t1);
+}
+.assembly-metrics {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--t3);
+  padding-top: 4px;
+  border-top: 1px dashed var(--border);
+}
+
